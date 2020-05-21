@@ -10,7 +10,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import by.step.thoughts.entity.Category;
-import by.step.thoughts.entity.CategoryWithProducts;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 
 @Dao
 public interface CategoryDao {

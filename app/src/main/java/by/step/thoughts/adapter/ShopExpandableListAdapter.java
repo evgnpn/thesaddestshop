@@ -10,9 +10,9 @@ import java.util.List;
 
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
-import by.step.thoughts.entity.CategoryWithProducts;
+import by.step.thoughts.entity.Category;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.entity.Product;
-import by.step.thoughts.interfaces.OnChildClickListener;
 
 public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -119,5 +119,9 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+    public interface OnChildClickListener {
+        void accept(Category t, Product u);
     }
 }

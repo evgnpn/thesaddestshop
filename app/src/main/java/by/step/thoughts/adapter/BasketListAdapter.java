@@ -1,29 +1,36 @@
 package by.step.thoughts.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import by.step.thoughts.BuildConfig;
-import by.step.thoughts.R;
-import by.step.thoughts.entity.Product;
+import java.util.List;
 
-public class BasketListAdapter extends ArrayAdapter<Product> {
+import by.step.thoughts.R;
+import by.step.thoughts.entity.relation.BasketItemAndProduct;
+
+public class BasketListAdapter extends ArrayAdapter<BasketItemAndProduct> {
 
     private int layoutResource;
+    private OnCloseClickListener onCloseClickListener;
 
-    public BasketListAdapter(@NonNull Context context, int layoutResource) {
-        super(context, layoutResource);
+    public BasketListAdapter(@NonNull Context context, int layoutResource, List<BasketItemAndProduct> basketItemAndProducts) {
+        super(context, layoutResource, basketItemAndProducts);
         this.layoutResource = layoutResource;
+    }
+
+    public OnCloseClickListener getOnCloseClickListener() {
+        return onCloseClickListener;
+    }
+
+    public void setOnCloseClickListener(OnCloseClickListener onCloseClickListener) {
+        this.onCloseClickListener = onCloseClickListener;
     }
 
     @NonNull
@@ -32,20 +39,30 @@ public class BasketListAdapter extends ArrayAdapter<Product> {
 
         View view = convertView != null ? convertView : View.inflate(getContext(), layoutResource, null);
 
-        Product product = getItem(position);
+        final BasketItemAndProduct basketItemAndProduct = getItem(position);
 
-        TextView indexTv = view.findViewById(R.id.indexTv);
         TextView titleTv = view.findViewById(R.id.titleTv);
         TextView amountTv = view.findViewById(R.id.amountTv);
-        Button closeBtn = view.findViewById(R.id.closeBtn);
+        final Button closeBtn = view.findViewById(R.id.closeBtn);
 
-        if (product != null) {
-            productTitleTv.setText(product.title);
-            productDescriptionTv.setText(product.description);
-            productPriceTv.setText(String.valueOf(product.price));
-            setImageViewWithByteArray(productImageIv, product.image);
+        if (basketItemAndProduct != null) {
+            titleTv.setText(basketItemAndProduct.product.title);
+            amountTv.setText(String.valueOf(basketItemAndProduct.basketItem.amount));
+
+            if (onCloseClickListener != null) {
+                closeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onCloseClickListener.accept(basketItemAndProduct, closeBtn);
+                    }
+                });
+            }
         }
 
         return view;
+    }
+
+    public interface OnCloseClickListener {
+        void accept(BasketItemAndProduct basketItemAndProduct, Button closeButton);
     }
 }

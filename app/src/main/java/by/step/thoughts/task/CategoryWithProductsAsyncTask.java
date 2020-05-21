@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import java.util.List;
 
 import by.step.thoughts.data.AppDatabase;
-import by.step.thoughts.entity.CategoryWithProducts;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.interfaces.OnAsyncTaskAction;
 
 public class CategoryWithProductsAsyncTask extends AsyncTask<AppDatabase, Void, List<CategoryWithProducts>> {

@@ -22,10 +22,9 @@ import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.ShopExpandableListAdapter;
 import by.step.thoughts.entity.Category;
-import by.step.thoughts.entity.CategoryWithProducts;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.interfaces.OnAsyncTaskAction;
-import by.step.thoughts.interfaces.OnChildClickListener;
 import by.step.thoughts.task.CategoryWithProductsAsyncTask;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
 
@@ -85,7 +84,7 @@ public class ShopFragment extends Fragment {
 
     private void createAdapter(Context context, List<CategoryWithProducts> categoryWithProductsList) {
         adapter = new ShopExpandableListAdapter(context, R.layout.category_item, R.layout.product_item, categoryWithProductsList);
-        adapter.setOnChildClickAction(new OnChildClickListener() {
+        adapter.setOnChildClickAction(new ShopExpandableListAdapter.OnChildClickListener() {
             @Override
             public void accept(Category category, Product product) {
                 getParentFragmentManager()

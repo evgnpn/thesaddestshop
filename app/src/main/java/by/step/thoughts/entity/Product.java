@@ -35,6 +35,31 @@ public class Product implements Parcelable {
     @ColumnInfo(name = "categoryId")
     public int categoryId;
 
+    public Product() {
+    }
+
+    @Ignore
+    protected Product(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        description = in.readString();
+        price = in.readDouble();
+        image = in.createByteArray();
+        categoryId = in.readInt();
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
     @Ignore
     @Override
     public int describeContents() {
