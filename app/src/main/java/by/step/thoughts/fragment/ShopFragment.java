@@ -38,8 +38,9 @@ public class ShopFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         Log.i(Constants.LOG_TAG, "ShopFragment: onCreate");
-        //   setRetainInstance(true);
+
 
     }
 

@@ -23,7 +23,9 @@ public class BasketListAdapter extends ArrayAdapter<BasketItemAndProduct> {
     public BasketListAdapter(@NonNull Context context, int layoutResource, List<BasketItemAndProduct> basketItemAndProducts) {
         super(context, layoutResource, basketItemAndProducts);
         this.layoutResource = layoutResource;
+        this.addAll();
     }
+
 
     public OnCloseClickListener getOnCloseClickListener() {
         return onCloseClickListener;

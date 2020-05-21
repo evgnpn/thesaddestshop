@@ -30,4 +30,8 @@ public class DatabaseViewModel extends ViewModel {
 
         databaseLiveData.setValue(database);
     }
+
+    public AppDatabase getDatabaseValue() {
+        return databaseLiveData.getValue();
+    }
 }
