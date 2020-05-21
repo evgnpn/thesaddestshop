@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Thoughts</string>
+    <string name="product_image">Product Image</string>
+    <string name="title">Title</string>
+    <string name="price">PRICE</string>
+    <string name="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse, laudantium!</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="count">COUNT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="basket">Корзина</string>
+    <string name="settings">Настройки</string>
+    <string name="buy">Купить</string>
+    <string name="add_to_basket">Добавить в корзину</string>
+    <string name="store">Магазин</string>
+</resources>
