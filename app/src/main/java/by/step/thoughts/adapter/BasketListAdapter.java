@@ -26,7 +26,6 @@ public class BasketListAdapter extends ArrayAdapter<BasketItemAndProduct> {
         this.addAll();
     }
 
-
     public OnCloseClickListener getOnCloseClickListener() {
         return onCloseClickListener;
     }
