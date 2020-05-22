@@ -1,13 +1,11 @@
 package by.step.thoughts.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -18,7 +16,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,10 +23,8 @@ import java.util.UUID;
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.BasketListAdapter;
+import by.step.thoughts.data.repository.BasketItemRepository;
 import by.step.thoughts.entity.relation.BasketItemAndProduct;
-import by.step.thoughts.interfaces.OnAsyncTaskAction;
-import by.step.thoughts.task.BasketItemAndProductAsyncTask;
-import by.step.thoughts.task.DeleteBasketItemAsyncTask;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
 
 public class BasketFragment extends Fragment {
@@ -37,8 +32,11 @@ public class BasketFragment extends Fragment {
     public static final String TAG = UUID.randomUUID().toString();
 
     private Context context;
+    private FragmentActivity activity;
     private View view;
+
     private ProgressBar progressBar;
+    private ListView basketLv;
 
     private BasketListAdapter adapter;
     private DatabaseViewModel databaseViewModel;
@@ -61,90 +59,42 @@ public class BasketFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         init();
-
-        new BasketItemAndProductAsyncTask(new OnAsyncTaskAction<List<BasketItemAndProduct>>() {
-            @Override
-            public void onStart() {
-                toggleProgressBar(progressBar);
-            }
-
-            @Override
-            public void onFinish(List<BasketItemAndProduct> result) {
-                toggleProgressBar(progressBar);
-                createAdapter(context, result);
-                setAdapter();
-            }
-
-            @Override
-            public void onProgress(Object... objects) {
-
-            }
-        }).execute(databaseViewModel.getDatabaseValue());
+        loadData();
     }
 
     private void init() {
-        context = getContext();
-        FragmentActivity activity = requireActivity();
-        view = getView();
+        context = requireContext();
+        activity = requireActivity();
+        view = requireView();
         databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
         progressBar = activity.findViewById(R.id.progressBar);
+        basketLv = view.findViewById(R.id.basketLv);
     }
 
     private void createAdapter(final Context context, List<BasketItemAndProduct> basketItemAndProducts) {
         adapter = new BasketListAdapter(context, R.layout.basket_item, basketItemAndProducts);
-        adapter.setOnCloseClickListener(new BasketListAdapter.OnCloseClickListener() {
-            @Override
-            public void accept(final BasketItemAndProduct basketItemAndProduct, Button closeButton) {
-
-                new MaterialAlertDialogBuilder(context)
-                        .setTitle("Подтверждение")
-                        .setMessage("Удалить продукт '" + basketItemAndProduct.product.title + "' из корзины?")
-                        .setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                new DeleteBasketItemAsyncTask(databaseViewModel.getDatabaseValue(), new OnAsyncTaskAction<Void>() {
-                                    @Override
-                                    public void onStart() {
-                                        toggleProgressBar(progressBar);
-                                    }
-
-                                    @Override
-                                    public void onFinish(Void result) {
-                                        toggleProgressBar(progressBar);
-                                        adapter.remove(basketItemAndProduct);
-                                        adapter.notifyDataSetChanged();
-
-
-                                        CharSequence qwe = "Продукт из корзины успешно удален";
-                                        Snackbar.make(view, qwe, Snackbar.LENGTH_SHORT)
-                                                .setAction("X", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                    }
-                                                })
-                                                .show();
-
-                                    }
-
-                                    @Override
-                                    public void onProgress(Object... objects) {
-
-                                    }
-                                }).execute(basketItemAndProduct.basketItem);
-
-
-                            }
-                        })
-                        .setNegativeButton("Отмена", null)
-                        .create().show();
-            }
-        });
+        adapter.setOnCloseClickListener((basketItemAndProduct, closeButton) -> new MaterialAlertDialogBuilder(context)
+                .setTitle("Подтверждение")
+                .setMessage("Удалить продукт '" + basketItemAndProduct.product.title + "' из корзины?")
+                .setPositiveButton("Удалить", (dialog, which) -> {
+                    toggleProgressBar(progressBar);
+                    BasketItemRepository rep = new BasketItemRepository(databaseViewModel.getDatabaseValue().getBasketItemDao());
+                    rep.delete(basketItemAndProduct.basketItem);
+                })
+                .setNegativeButton("Отмена", null)
+                .create().show());
     }
 
-    private void setAdapter() {
-        ListView basketLv = view.findViewById(R.id.basketLv);
-        basketLv.setAdapter(adapter);
+    private void loadData() {
+        toggleProgressBar(progressBar);
+        databaseViewModel.getDatabaseValue()
+                .getBasketItemDao()
+                .getBasketItemAndProducts()
+                .observe(activity, basketProducts -> {
+                    toggleProgressBar(progressBar);
+                    createAdapter(context, basketProducts);
+                    basketLv.setAdapter(adapter);
+                });
     }
 
     private void toggleProgressBar(ProgressBar progressBar) {

@@ -1,8 +1,12 @@
 package by.step.thoughts.data;
 
+import android.content.Context;
+
 import androidx.room.Database;
+import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import by.step.thoughts.Constants;
 import by.step.thoughts.data.dao.BasketItemDao;
 import by.step.thoughts.data.dao.CategoryDao;
 import by.step.thoughts.data.dao.ProductDao;
@@ -18,12 +22,23 @@ import by.step.thoughts.entity.Purse;
 public abstract class AppDatabase extends RoomDatabase {
 
     abstract public CategoryDao getCategoryDao();
-
     abstract public ProductDao getProductDao();
-
     abstract public PurchaseDao getPurchaseDao();
-
     abstract public BasketItemDao getBasketItemDao();
-
     abstract public PurseDao getPurseDaoDao();
+
+    private static AppDatabase INSTANCE;
+
+    public static AppDatabase getDatabase(final Context context) {
+        if (INSTANCE == null) {
+            synchronized (AppDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, Constants.DATABASE_FILENAME)
+                            .createFromAsset(Constants.DATABASE_FILENAME)
+                            .build();
+                }
+            }
+        }
+        return INSTANCE;
+    }
 }

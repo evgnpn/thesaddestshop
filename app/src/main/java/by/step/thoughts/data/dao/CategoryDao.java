@@ -1,5 +1,6 @@
 package by.step.thoughts.data.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -9,21 +10,22 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import by.step.thoughts.data.DataAccessObject;
 import by.step.thoughts.entity.Category;
 import by.step.thoughts.entity.relation.CategoryWithProducts;
 
 @Dao
-public interface CategoryDao {
+public interface CategoryDao extends DataAccessObject<Category> {
 
     @Query("SELECT * FROM Categories")
-    List<Category> getAll();
+    LiveData<List<Category>> getAll();
 
     @Query("SELECT * FROM Categories WHERE id = :id LIMIT 1")
-    Category getById(int id);
+    LiveData<Category> getById(int id);
 
     @Transaction
     @Query("SELECT * FROM Categories")
-    List<CategoryWithProducts> getCategoryWithProducts();
+    LiveData<List<CategoryWithProducts>> getCategoryWithProducts();
 
     @Insert
     void insert(Category... categories);

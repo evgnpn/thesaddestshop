@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -21,6 +22,11 @@ import java.util.List;
 
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
+
+import by.step.thoughts.data.repository.BasketItemRepository;
+import by.step.thoughts.data.repository.ProductRepository;
+import by.step.thoughts.entity.BasketItem;
+import by.step.thoughts.entity.Product;
 import by.step.thoughts.fragment.BasketFragment;
 import by.step.thoughts.fragment.ShopFragment;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
@@ -29,10 +35,10 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class MainActivity extends AppCompatActivity {
 
-    static int activePageId = Constants.DEFAULT_PAGE_ID;
+    public static int activePageId = Constants.DEFAULT_PAGE_ID;
 
-    MaterialToolbar topAppBar;
-    BottomNavigationView bottomNavBar;
+    private MaterialToolbar topAppBar;
+    private BottomNavigationView bottomNavBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +50,53 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Button dbgBtn = findViewById(R.id.debugBtn);
-        dbgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Fragment> fragments = getSupportFragmentManager().getFragments();
-                Toast.makeText(MainActivity.this, String.valueOf(fragments.size()), Toast.LENGTH_SHORT).show();
-            }
+        dbgBtn.setOnClickListener(v -> {
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            Toast.makeText(MainActivity.this, String.valueOf(fragments.size()), Toast.LENGTH_SHORT).show();
         });
 
-        new ViewModelProvider(this).get(DatabaseViewModel.class).setContext(this);
+        DatabaseViewModel databaseViewModel = new ViewModelProvider(this).get(DatabaseViewModel.class);
+        databaseViewModel.setContext(this);
+//
+//        ProductRepository www = new ProductRepository(databaseViewModel.getDatabaseValue().getProductDao());
+//        Product p = new Product();
+//        p.title = "www";
+//        p.categoryId = 1;
+//        p.description = "dddd";
+//        p.price = 123.3;
+//        www.insert(p);
+//
+        BasketItemRepository www = new BasketItemRepository(databaseViewModel.getDatabaseValue().getBasketItemDao());
+        BasketItem p = new BasketItem();
+        p.productId = 43;
+        p.amount = 555;
+        www.insert(p);
+
+//        LiveData<List<Product>> productsLiveData = databaseViewModel.getDatabaseValue().getProductDao().getAll();
+//        productsLiveData.observe(this, _products -> {
+//
+//            Toast.makeText(this, _products.size() + "", Toast.LENGTH_SHORT).show();
+//
+//            Thread thread = new Thread(() -> {
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                Product[] pArr = new Product[_products.size()];
+//                _products.toArray(pArr);
+//
+//
+//                databaseViewModel.getDatabaseValue().getProductDao().delete(pArr);
+//            });
+//
+//            thread.start();
+//
+//        });
+
+
+
 
         configureTopAppBar();
         configureBottomNavBar(activePageId);
@@ -72,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFragments() {
-        Log.i(LOG_TAG, "initFragments");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

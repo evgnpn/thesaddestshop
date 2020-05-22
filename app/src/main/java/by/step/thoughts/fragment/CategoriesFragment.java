@@ -50,21 +50,21 @@ public class CategoriesFragment extends Fragment {
                 categoriesLv.setAdapter(adapter);
 
 
-                Thread th = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Category> categories = databaseViewModel
-                                .getDatabase()
-                                .getValue()
-                                .getCategoryDao()
-                                .getAll();
-
-                        for (Category category : categories) {
-                            adapter.add(category);
-                        }
-                    }
-                });
-                th.start();
+//                Thread th = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        List<Category> categories = databaseViewModel
+//                                .getDatabase()
+//                                .getValue()
+//                                .getCategoryDao()
+//                                .getAll();
+//
+//                        for (Category category : categories) {
+//                            adapter.add(category);
+//                        }
+//                    }
+//                });
+//                th.start();
 
 
             }
