@@ -12,21 +12,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.UUID;
+
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
 
-public class ProductFullViewFragment extends Fragment {
+public class ProductDetailsFragment extends Fragment {
+
+    public static final String TAG = UUID.randomUUID().toString();
 
     private static final String ARG_PRODUCT = "product";
     private DatabaseViewModel databaseViewModel;
 
-    public ProductFullViewFragment() {
+    public ProductDetailsFragment() {
     }
 
-    public static ProductFullViewFragment newInstance(Product product) {
-        ProductFullViewFragment fragment = new ProductFullViewFragment();
+    public static ProductDetailsFragment newInstance(Product product) {
+        ProductDetailsFragment fragment = new ProductDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PRODUCT, product);
         fragment.setArguments(args);

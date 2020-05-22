@@ -27,7 +27,6 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
             int groupLayoutResource,
             int childLayoutResource,
             List<CategoryWithProducts> categoryWithProducts) {
-
         this.context = context;
         this.categoryWithProducts = categoryWithProducts;
         this.groupLayoutResource = groupLayoutResource;

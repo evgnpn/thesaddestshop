@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
+import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.fragment.BasketFragment;
 import by.step.thoughts.fragment.ShopFragment;
@@ -24,7 +29,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class MainActivity extends AppCompatActivity {
 
-    static int activePageId = R.id.shop_page;
+    static int activePageId = Constants.DEFAULT_PAGE_ID;
 
     MaterialToolbar topAppBar;
     BottomNavigationView bottomNavBar;
@@ -38,18 +43,14 @@ public class MainActivity extends AppCompatActivity {
             initFragments();
         }
 
-//        if (savedInstanceState != null) {
-//            return;
-//        }
-
-//        Button dbgBtn = findViewById(R.id.debugBtn);
-//        dbgBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//                Toast.makeText(MainActivity.this, String.valueOf(fragments.size()), Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        Button dbgBtn = findViewById(R.id.debugBtn);
+        dbgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                Toast.makeText(MainActivity.this, String.valueOf(fragments.size()), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         new ViewModelProvider(this).get(DatabaseViewModel.class).setContext(this);
 
@@ -119,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureBottomNavBar(int pageId) {
-        Log.i(LOG_TAG, "configureBottomNavBar");
 
         bottomNavBar = findViewById(R.id.bottomNavBar);
         bottomNavBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

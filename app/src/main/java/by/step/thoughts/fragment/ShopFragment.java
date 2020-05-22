@@ -22,26 +22,30 @@ import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.ShopExpandableListAdapter;
 import by.step.thoughts.entity.Category;
-import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.entity.Product;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.interfaces.OnAsyncTaskAction;
 import by.step.thoughts.task.CategoryWithProductsAsyncTask;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
+
+import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ShopFragment extends Fragment {
 
     public static final String TAG = UUID.randomUUID().toString();
 
-    private ShopExpandableListAdapter adapter;
+    private Context context;
+    private View view;
+    private ProgressBar progressBar;
+
     private DatabaseViewModel databaseViewModel;
+    private ShopExpandableListAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        Log.i(Constants.LOG_TAG, "ShopFragment: onCreate");
-
-
+        Log.i(LOG_TAG, "ShopFragment: onCreate");
+        setRetainInstance(false);
     }
 
     @Override
@@ -54,33 +58,39 @@ public class ShopFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Log.i(LOG_TAG, "ShopFragment: onActivityCreated (has savedInstance: " + (savedInstanceState != null) + ")");
+
+//        if (savedInstanceState != null)
+//            return;
+
+        init();
+
+        new CategoryWithProductsAsyncTask(new OnAsyncTaskAction<List<CategoryWithProducts>>() {
+            @Override
+            public void onStart() {
+                toggleProgressBar(progressBar);
+            }
+
+            @Override
+            public void onFinish(List<CategoryWithProducts> result) {
+                toggleProgressBar(progressBar);
+                createAdapter(context, result);
+                setAdapter();
+            }
+
+            @Override
+            public void onProgress(Object... objects) {
+
+            }
+        }).execute(databaseViewModel.getDatabaseValue());
+    }
+
+    private void init() {
+        context = getContext();
         FragmentActivity activity = requireActivity();
+        view = getView();
         databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
-        final Context context = getContext();
-        final ProgressBar progressBar = activity.findViewById(R.id.progressBar);
-
-        if (context != null) {
-
-            new CategoryWithProductsAsyncTask(new OnAsyncTaskAction<List<CategoryWithProducts>>() {
-                @Override
-                public void onStart() {
-                    toggleProgressBar(progressBar);
-                }
-
-                @Override
-                public void onFinish(List<CategoryWithProducts> result) {
-                    toggleProgressBar(progressBar);
-                    createAdapter(context, result);
-                    setAdapter();
-                }
-
-                @Override
-                public void onProgress(Object... objects) {
-
-                }
-            }).execute(databaseViewModel.getDatabase().getValue());
-        }
-
+        progressBar = activity.findViewById(R.id.progressBar);
     }
 
     private void createAdapter(Context context, List<CategoryWithProducts> categoryWithProductsList) {
@@ -90,7 +100,7 @@ public class ShopFragment extends Fragment {
             public void accept(Category category, Product product) {
                 getParentFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, ProductFullViewFragment.newInstance(product))
+                        .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
                         .addToBackStack(null)
                         .commit();
             }
@@ -98,11 +108,8 @@ public class ShopFragment extends Fragment {
     }
 
     private void setAdapter() {
-        View view = getView();
-        if (view != null) {
-            ExpandableListView productsElv = view.findViewById(R.id.productsElv);
-            productsElv.setAdapter(adapter);
-        }
+        ExpandableListView productsElv = view.findViewById(R.id.productsElv);
+        productsElv.setAdapter(adapter);
     }
 
     private void toggleProgressBar(ProgressBar progressBar) {
@@ -112,6 +119,6 @@ public class ShopFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(Constants.LOG_TAG, "ShopFragment: onDestroy");
+        Log.i(LOG_TAG, "ShopFragment: onDestroy");
     }
 }

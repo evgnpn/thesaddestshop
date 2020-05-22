@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,19 +36,18 @@ public class BasketFragment extends Fragment {
 
     public static final String TAG = UUID.randomUUID().toString();
 
+    private Context context;
+    private View view;
+    private ProgressBar progressBar;
+
     private BasketListAdapter adapter;
     private DatabaseViewModel databaseViewModel;
-
-    private FragmentActivity activity;
-    private View view;
-
-    private ProgressBar progressBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         Log.i(Constants.LOG_TAG, "BasketFragment: onCreate");
+        setRetainInstance(true);
     }
 
     @Override
@@ -62,42 +60,34 @@ public class BasketFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        activity = requireActivity();
-        view = getView();
+        init();
 
-        databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
-        final Context context = getContext();
-        progressBar = activity.findViewById(R.id.progressBar);
+        new BasketItemAndProductAsyncTask(new OnAsyncTaskAction<List<BasketItemAndProduct>>() {
+            @Override
+            public void onStart() {
+                toggleProgressBar(progressBar);
+            }
 
-        if (context != null) {
+            @Override
+            public void onFinish(List<BasketItemAndProduct> result) {
+                toggleProgressBar(progressBar);
+                createAdapter(context, result);
+                setAdapter();
+            }
 
-            new BasketItemAndProductAsyncTask(new OnAsyncTaskAction<List<BasketItemAndProduct>>() {
-                @Override
-                public void onStart() {
-                    toggleProgressBar(progressBar);
-                }
+            @Override
+            public void onProgress(Object... objects) {
 
-                @Override
-                public void onFinish(List<BasketItemAndProduct> result) {
-                    toggleProgressBar(progressBar);
-                    createAdapter(context, result);
-                    setAdapter();
-                }
-
-                @Override
-                public void onProgress(Object... objects) {
-
-                }
-            }).execute(databaseViewModel.getDatabaseValue());
-        }
-
-
+            }
+        }).execute(databaseViewModel.getDatabaseValue());
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i(Constants.LOG_TAG, "BasketFragment: onDestroy");
+    private void init() {
+        context = getContext();
+        FragmentActivity activity = requireActivity();
+        view = getView();
+        databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
+        progressBar = activity.findViewById(R.id.progressBar);
     }
 
     private void createAdapter(final Context context, List<BasketItemAndProduct> basketItemAndProducts) {
