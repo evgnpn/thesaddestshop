@@ -14,6 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
@@ -21,6 +25,7 @@ import java.util.UUID;
 
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.ShopExpandableListAdapter;
+import by.step.thoughts.data.repository.CategoryRepository;
 import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
 
@@ -38,6 +43,8 @@ public class ShopFragment extends Fragment {
     private ShopExpandableListAdapter adapter;
     private ProgressBar progressBar;
     private ExpandableListView productsElv;
+
+    private CategoryRepository categoryRepository;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,16 +73,14 @@ public class ShopFragment extends Fragment {
         activity = requireActivity();
         view = requireView();
         databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
+        categoryRepository = new CategoryRepository(databaseViewModel.getDatabaseValue().getCategoryDao());
         progressBar = activity.findViewById(R.id.progressBar);
         productsElv = view.findViewById(R.id.productsElv);
     }
 
     private void loadData() {
         toggleProgressBar(progressBar);
-        databaseViewModel.getDatabaseValue()
-                .getCategoryDao()
-                .getCategoryWithProducts()
-                .observe(activity, categoriesWithProducts -> {
+        categoryRepository.getCategoryWithProducts().observe(activity, categoriesWithProducts -> {
                     createAdapter(context, categoriesWithProducts);
                     productsElv.setAdapter(adapter);
                     toggleProgressBar(progressBar);
@@ -85,10 +90,11 @@ public class ShopFragment extends Fragment {
     private void createAdapter(Context context, List<CategoryWithProducts> categoryWithProductsList) {
         adapter = new ShopExpandableListAdapter(context, R.layout.category_item, R.layout.product_item, categoryWithProductsList);
         adapter.setOnChildClickAction((category, product) -> {
-            FragmentManager manager = getChildFragmentManager();
+            FragmentManager manager = getParentFragmentManager();
+
 
             manager.beginTransaction()
-                    .replace(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
+                    .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
                     .commit();
         });
     }

@@ -18,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import by.step.thoughts.Constants;
@@ -28,6 +30,7 @@ import by.step.thoughts.data.repository.ProductRepository;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.fragment.BasketFragment;
+import by.step.thoughts.fragment.ProductDetailsFragment;
 import by.step.thoughts.fragment.ShopFragment;
 import by.step.thoughts.viewmodel.DatabaseViewModel;
 
@@ -55,48 +58,9 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, String.valueOf(fragments.size()), Toast.LENGTH_SHORT).show();
         });
 
+
         DatabaseViewModel databaseViewModel = new ViewModelProvider(this).get(DatabaseViewModel.class);
         databaseViewModel.setContext(this);
-//
-//        ProductRepository www = new ProductRepository(databaseViewModel.getDatabaseValue().getProductDao());
-//        Product p = new Product();
-//        p.title = "www";
-//        p.categoryId = 1;
-//        p.description = "dddd";
-//        p.price = 123.3;
-//        www.insert(p);
-//
-        BasketItemRepository www = new BasketItemRepository(databaseViewModel.getDatabaseValue().getBasketItemDao());
-        BasketItem p = new BasketItem();
-        p.productId = 43;
-        p.amount = 555;
-        www.insert(p);
-
-//        LiveData<List<Product>> productsLiveData = databaseViewModel.getDatabaseValue().getProductDao().getAll();
-//        productsLiveData.observe(this, _products -> {
-//
-//            Toast.makeText(this, _products.size() + "", Toast.LENGTH_SHORT).show();
-//
-//            Thread thread = new Thread(() -> {
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Product[] pArr = new Product[_products.size()];
-//                _products.toArray(pArr);
-//
-//
-//                databaseViewModel.getDatabaseValue().getProductDao().delete(pArr);
-//            });
-//
-//            thread.start();
-//
-//        });
-
-
-
 
         configureTopAppBar();
         configureBottomNavBar(activePageId);
@@ -152,37 +116,60 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    private void switchFragmentNew(String neededFragmentTag) {
+
+        String activeFragmentTag = getFragmentTagByPageId(activePageId);
+
+
+        if (activeFragmentTag == null) {
+            return;
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment activeFragment = fragmentManager.findFragmentByTag(activeFragmentTag);
+        if (activeFragment != null)
+            fragmentTransaction.hide(activeFragment);
+
+        Fragment neededFragment = fragmentManager.findFragmentByTag(neededFragmentTag);
+        if (neededFragment != null)
+            fragmentTransaction.show(neededFragment);
+
+        fragmentTransaction.commit();
+    }
+
     private void configureTopAppBar() {
         topAppBar = findViewById(R.id.topAppBar);
-        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        //  topAppBar.navigation
+        topAppBar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void configureBottomNavBar(int pageId) {
 
         bottomNavBar = findViewById(R.id.bottomNavBar);
-        bottomNavBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.shop_page:
-                        switchFragment(ShopFragment.TAG);
-                        activePageId = R.id.shop_page;
-                        return true;
-                    case R.id.basket_page:
-                        switchFragment(BasketFragment.TAG);
-                        activePageId = R.id.basket_page;
-                        return true;
-                    default:
-                        return false;
-                }
+        bottomNavBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.shop_page:
+                    setActiveFragment(ShopFragment.TAG, R.id.shop_page);
+                    return true;
+                case R.id.basket_page:
+                    setActiveFragment(BasketFragment.TAG, R.id.basket_page);
+                    return true;
+                default:
+                    return false;
             }
+
         });
         bottomNavBar.setSelectedItemId(pageId);
+    }
+
+    private void setActiveFragment(String fragmentTag, int pageId) {
+        switchFragment(fragmentTag);
+        activePageId = pageId;
+
+        if (getSupportFragmentManager().findFragmentByTag(ProductDetailsFragment.TAG) != null)
+            topAppBar.setNavigationIcon(null);
     }
 
     @Override

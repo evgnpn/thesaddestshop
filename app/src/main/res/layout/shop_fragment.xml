@@ -5,16 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <ExpandableListView
+        android:id="@+id/productsElv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
-        <ExpandableListView
-            android:id="@+id/productsElv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </ScrollView>
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

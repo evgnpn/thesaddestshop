@@ -2,11 +2,45 @@ package by.step.thoughts.data.repository;
 
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
+import java.util.List;
+
 import by.step.thoughts.data.DataAccessObject;
 
-public class BaseRepository<TEntity> {
+public abstract class BaseRepository<TEntity> {
 
-    protected static class InsertAsyncTask<T, TEntityDao> extends AsyncTask<T, Void, Void> {
+    private DataAccessObject<TEntity> dao;
+
+    public BaseRepository(DataAccessObject<TEntity> dao) {
+        this.dao = dao;
+    }
+
+    public LiveData<List<TEntity>> getAll() {
+        return dao.getAll();
+    }
+
+    public void insert(TEntity entity) {
+        new InsertAsyncTask<>(dao).execute(entity);
+    }
+
+    public void insert(TEntity[] entities) {
+        new InsertAsyncTask<>(dao).execute(entities);
+    }
+
+    public void delete(TEntity[] entities) {
+        new DeleteAsyncTask<>(dao).execute(entities);
+    }
+
+    public void update(TEntity[] entities) {
+        new UpdateAsyncTask<>(dao).execute(entities);
+    }
+
+    public DataAccessObject<TEntity> getDao() {
+        return dao;
+    }
+
+    protected static class InsertAsyncTask<T> extends AsyncTask<T, Void, Void> {
 
         private DataAccessObject<T> dao;
 
@@ -21,7 +55,7 @@ public class BaseRepository<TEntity> {
         }
     }
 
-    protected static class DeleteAsyncTask<T, TEntityDao> extends AsyncTask<T, Void, Void> {
+    protected static class DeleteAsyncTask<T> extends AsyncTask<T, Void, Void> {
 
         private DataAccessObject<T> dao;
 
@@ -36,7 +70,7 @@ public class BaseRepository<TEntity> {
         }
     }
 
-    protected static class UpdateAsyncTask<T, TEntityDao> extends AsyncTask<T, Void, Void> {
+    protected static class UpdateAsyncTask<T> extends AsyncTask<T, Void, Void> {
 
         private DataAccessObject<T> dao;
 

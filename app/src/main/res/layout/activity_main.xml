@@ -17,8 +17,7 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/top_app_bar"
-                app:navigationIcon="@drawable/ic_back_arrow">
+                app:menu="@menu/top_app_bar">
 
                 <FrameLayout
                     android:layout_width="match_parent"

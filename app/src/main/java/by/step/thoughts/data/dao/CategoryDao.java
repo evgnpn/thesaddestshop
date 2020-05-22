@@ -35,5 +35,4 @@ public interface CategoryDao extends DataAccessObject<Category> {
 
     @Update
     void update(Category... categories);
-
 }
