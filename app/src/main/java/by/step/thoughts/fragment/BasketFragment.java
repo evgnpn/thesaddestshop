@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +21,13 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.UUID;
 
-import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.BasketListAdapter;
-import by.step.thoughts.data.repository.BasketItemRepository;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.relation.BasketItemAndProduct;
-import by.step.thoughts.viewmodel.DatabaseViewModel;
+import by.step.thoughts.viewmodel.DataViewModel;
+
+import static by.step.thoughts.Constants.LOG_TAG;
 
 public class BasketFragment extends Fragment {
 
@@ -42,16 +41,14 @@ public class BasketFragment extends Fragment {
     private ListView basketLv;
 
     private BasketListAdapter adapter;
-    private DatabaseViewModel databaseViewModel;
-
-    private BasketItemRepository basketItemRepository;
+    private DataViewModel dataViewModel;
 
     private String lastDeletedString = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(Constants.LOG_TAG, "BasketFragment: onCreate");
+        Log.i(LOG_TAG, "BasketFragment: onCreate");
         setRetainInstance(true);
     }
 
@@ -73,24 +70,21 @@ public class BasketFragment extends Fragment {
         context = requireContext();
         activity = requireActivity();
         view = requireView();
-        databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
-        basketItemRepository = new BasketItemRepository(databaseViewModel.getDatabaseValue().getBasketItemDao());
+        dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
         progressBar = activity.findViewById(R.id.progressBar);
         basketLv = view.findViewById(R.id.basketLv);
     }
 
     private void loadData() {
-        toggleProgressBar(progressBar);
-        databaseViewModel.getDatabaseValue()
-                .getBasketItemDao()
-                .getBasketItemAndProducts()
+        dataViewModel.setLoadingStatus(true);
+        dataViewModel.getBasketItemRepository().getBasketItemAndProducts()
                 .observe(activity, basketProducts -> {
-                    toggleProgressBar(progressBar);
                     createAdapter(context, basketProducts);
                     basketLv.setAdapter(adapter);
                     if (lastDeletedString != null) {
                         showDeletedMessage("Продукт '" + lastDeletedString + "' удален из корзины");
                     }
+                    dataViewModel.setLoadingStatus(false);
                 });
     }
 
@@ -100,16 +94,12 @@ public class BasketFragment extends Fragment {
                 .setTitle("Подтверждение")
                 .setMessage("Удалить продукт '" + basketItemAndProduct.product.title + "' из корзины?")
                 .setPositiveButton("Удалить", (dialog, which) -> {
+                    dataViewModel.setLoadingStatus(true);
                     lastDeletedString = basketItemAndProduct.product.title;
-                    toggleProgressBar(progressBar);
-                    basketItemRepository.delete(new BasketItem[]{basketItemAndProduct.basketItem});
+                    dataViewModel.getBasketItemRepository().delete(new BasketItem[]{basketItemAndProduct.basketItem});
                 })
                 .setNegativeButton("Отмена", null)
                 .create().show());
-    }
-
-    private void toggleProgressBar(ProgressBar progressBar) {
-        progressBar.setVisibility(progressBar.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
     private void showDeletedMessage(String message) {

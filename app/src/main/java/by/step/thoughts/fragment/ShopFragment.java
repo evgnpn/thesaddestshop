@@ -7,17 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
@@ -25,9 +20,8 @@ import java.util.UUID;
 
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.ShopExpandableListAdapter;
-import by.step.thoughts.data.repository.CategoryRepository;
 import by.step.thoughts.entity.relation.CategoryWithProducts;
-import by.step.thoughts.viewmodel.DatabaseViewModel;
+import by.step.thoughts.viewmodel.DataViewModel;
 
 import static by.step.thoughts.Constants.LOG_TAG;
 
@@ -39,12 +33,11 @@ public class ShopFragment extends Fragment {
     private FragmentActivity activity;
     private View view;
 
-    private DatabaseViewModel databaseViewModel;
+
     private ShopExpandableListAdapter adapter;
-    private ProgressBar progressBar;
     private ExpandableListView productsElv;
 
-    private CategoryRepository categoryRepository;
+    private DataViewModel dataViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +56,6 @@ public class ShopFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.i(LOG_TAG, "ShopFragment: onActivityCreated (has savedInstance: " + (savedInstanceState != null) + ")");
-
         init();
         loadData();
     }
@@ -72,19 +64,17 @@ public class ShopFragment extends Fragment {
         context = requireContext();
         activity = requireActivity();
         view = requireView();
-        databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
-        categoryRepository = new CategoryRepository(databaseViewModel.getDatabaseValue().getCategoryDao());
-        progressBar = activity.findViewById(R.id.progressBar);
+        dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
         productsElv = view.findViewById(R.id.productsElv);
     }
 
     private void loadData() {
-        toggleProgressBar(progressBar);
-        categoryRepository.getCategoryWithProducts().observe(activity, categoriesWithProducts -> {
-                    createAdapter(context, categoriesWithProducts);
-                    productsElv.setAdapter(adapter);
-                    toggleProgressBar(progressBar);
-                });
+        dataViewModel.setLoadingStatus(true);
+        dataViewModel.getCategoryRepository().getCategoryWithProducts().observe(activity, categoriesWithProducts -> {
+            createAdapter(context, categoriesWithProducts);
+            productsElv.setAdapter(adapter);
+            dataViewModel.setLoadingStatus(false);
+        });
     }
 
     private void createAdapter(Context context, List<CategoryWithProducts> categoryWithProductsList) {
@@ -92,14 +82,10 @@ public class ShopFragment extends Fragment {
         adapter.setOnChildClickAction((category, product) -> {
             FragmentManager manager = getParentFragmentManager();
 
-
             manager.beginTransaction()
                     .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
                     .commit();
         });
     }
 
-    private void toggleProgressBar(ProgressBar progressBar) {
-        progressBar.setVisibility(progressBar.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-    }
 }

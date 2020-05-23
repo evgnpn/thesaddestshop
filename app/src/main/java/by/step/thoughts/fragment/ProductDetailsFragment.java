@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -25,7 +24,9 @@ import by.step.thoughts.R;
 import by.step.thoughts.data.repository.BasketItemRepository;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Product;
-import by.step.thoughts.viewmodel.DatabaseViewModel;
+import by.step.thoughts.viewmodel.DataViewModel;
+
+import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ProductDetailsFragment extends Fragment {
 
@@ -37,12 +38,16 @@ public class ProductDetailsFragment extends Fragment {
     private FragmentActivity activity;
     private MaterialToolbar topAppBar;
     private Button addToBasketButton;
-    private ProgressBar progressBar;
 
-    private DatabaseViewModel databaseViewModel;
-    private BasketItemRepository basketItemRepository;
+    private DataViewModel dataViewModel;
 
     private Product product;
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(LOG_TAG, "ProductDetailsFragment onHiddenChanged: " + hidden);
+    }
 
 
     public static ProductDetailsFragment newInstance(Product product) {
@@ -99,9 +104,7 @@ public class ProductDetailsFragment extends Fragment {
         activity = requireActivity();
         view = requireView();
         product = requireArguments().getParcelable(ARG_PRODUCT);
-        databaseViewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
-        basketItemRepository = new BasketItemRepository(databaseViewModel.getDatabaseValue().getBasketItemDao());
-        progressBar = activity.findViewById(R.id.progressBar);
+        dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
         addToBasketButton = activity.findViewById(R.id.addToBasketBtn);
         addToBasketButton.setOnClickListener(v -> {
 
