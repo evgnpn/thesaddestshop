@@ -1,13 +1,11 @@
 package by.step.thoughts.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -20,7 +18,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
-import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.data.AppDatabase;
 import by.step.thoughts.data.repository.BasketItemRepository;
@@ -30,15 +27,14 @@ import by.step.thoughts.data.repository.PurchaseRepository;
 import by.step.thoughts.data.repository.PurseRepository;
 import by.step.thoughts.fragment.BasketFragment;
 import by.step.thoughts.fragment.ProductDetailsFragment;
+import by.step.thoughts.fragment.PurseFragment;
 import by.step.thoughts.fragment.ShopFragment;
 import by.step.thoughts.viewmodel.DataViewModel;
 import by.step.thoughts.viewmodel.DataViewModelFactory;
 
-import static by.step.thoughts.Constants.LOG_TAG;
-
 public class MainActivity extends AppCompatActivity {
 
-    public static int activePageId = Constants.DEFAULT_PAGE_ID;
+    public static String activeFragmentTag = ShopFragment.TAG;
 
     private ProgressBar progressBar;
     private MaterialToolbar topAppBar;
@@ -61,20 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         configureTopAppBar();
-        configureBottomNavBar(activePageId);
-    }
-
-    private String getFragmentTagByPageId(int pageId) {
-        switch (pageId) {
-            case R.id.shop_page:
-                return ShopFragment.TAG;
-            case R.id.basket_page:
-                return BasketFragment.TAG;
-            case R.id.purse_page:
-                return "";
-            default:
-                return null;
-        }
+        configureBottomNavBar();
     }
 
     private void init() {
@@ -93,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
         dataViewModel.getLoadStatus().observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
-            Toast.makeText(this, "loading: " + isLoading, Toast.LENGTH_SHORT).show();
         });
 
         initFragments();
@@ -106,21 +88,20 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment shopFragment = new ShopFragment();
         Fragment basketFragment = new BasketFragment();
+        Fragment purseFragment = new PurseFragment();
 
         fragmentTransaction
                 .add(R.id.container, shopFragment, ShopFragment.TAG).show(shopFragment)
-                .add(R.id.container, basketFragment, BasketFragment.TAG).hide(basketFragment);
+                .add(R.id.container, basketFragment, BasketFragment.TAG).hide(basketFragment)
+                .add(R.id.container, purseFragment, PurseFragment.TAG).hide(purseFragment);
 
         fragmentTransaction.commit();
     }
 
     private void switchFragment(String neededFragmentTag) {
 
-        String activeFragmentTag = getFragmentTagByPageId(activePageId);
-
-        if (activeFragmentTag == null) {
+        if (activeFragmentTag == null)
             return;
-        }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -134,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.show(neededFragment);
 
         fragmentTransaction.commit();
+
+        MainActivity.activeFragmentTag = neededFragmentTag;
     }
 
     private void configureTopAppBar() {
@@ -141,23 +124,26 @@ public class MainActivity extends AppCompatActivity {
         topAppBar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    private void configureBottomNavBar(int pageId) {
+    private void configureBottomNavBar() {
 
         bottomNavBar = findViewById(R.id.bottomNavBar);
         bottomNavBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.shop_page:
-                    setActiveFragment(ShopFragment.TAG, R.id.shop_page);
+                    setActiveFragment(ShopFragment.TAG);
                     return true;
                 case R.id.basket_page:
-                    setActiveFragment(BasketFragment.TAG, R.id.basket_page);
+                    setActiveFragment(BasketFragment.TAG);
+                    return true;
+                case R.id.purse_page:
+                    setActiveFragment(PurseFragment.TAG);
                     return true;
                 default:
                     return false;
             }
 
         });
-        bottomNavBar.setSelectedItemId(pageId);
+        bottomNavBar.setSelectedItemId(getPageIdByFragmentTag(activeFragmentTag));
 
         BadgeDrawable badge = bottomNavBar.getOrCreateBadge(R.id.basket_page);
         badge.setVisible(true);
@@ -165,17 +151,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setActiveFragment(String fragmentTag, int pageId) {
+    private void setActiveFragment(String fragmentTag) {
         switchFragment(fragmentTag);
-        activePageId = pageId;
 
-        if (getSupportFragmentManager().findFragmentByTag(ProductDetailsFragment.TAG) != null)
-            topAppBar.setNavigationIcon(null);
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i(LOG_TAG, "onSaveInstanceState");
+    private int getPageIdByFragmentTag(final String tag) {
+        if (ShopFragment.TAG.equals(tag))
+            return R.id.shop_page;
+        if (BasketFragment.TAG.equals(tag))
+            return R.id.basket_page;
+        if (PurseFragment.TAG.equals(tag))
+            return R.id.purse_page;
+        return -1;
     }
 }

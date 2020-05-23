@@ -1,14 +1,15 @@
 package by.step.thoughts.fragment;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,7 +22,6 @@ import java.util.UUID;
 
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
-import by.step.thoughts.data.repository.BasketItemRepository;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.viewmodel.DataViewModel;
@@ -47,10 +47,19 @@ public class ProductDetailsFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         Log.i(LOG_TAG, "ProductDetailsFragment onHiddenChanged: " + hidden);
+        addToBasketButton.setVisibility(hidden ? View.INVISIBLE : View.VISIBLE);
+
+        if (hidden)
+            topAppBar.setNavigationIcon(null);
+        else
+            topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
+
+
+
     }
 
 
-    public static ProductDetailsFragment newInstance(Product product) {
+    static ProductDetailsFragment newInstance(Product product) {
         ProductDetailsFragment fragment = new ProductDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PRODUCT, product);
@@ -86,6 +95,7 @@ public class ProductDetailsFragment extends Fragment {
             productPriceTv.setText(String.format("%s%s", product.price, Constants.CURRENCY));
         }
     }
+
 
     @Override
     public void onResume() {
