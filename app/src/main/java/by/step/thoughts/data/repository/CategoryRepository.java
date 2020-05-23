@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import by.step.thoughts.data.dao.BasketItemDao;
 import by.step.thoughts.data.dao.CategoryDao;
 import by.step.thoughts.entity.Category;
 import by.step.thoughts.entity.relation.CategoryWithProducts;

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +36,6 @@ public class BasketFragment extends Fragment {
     private FragmentActivity activity;
     private View view;
 
-    private ProgressBar progressBar;
     private ListView basketLv;
 
     private BasketListAdapter adapter;
@@ -48,7 +46,8 @@ public class BasketFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "BasketFragment: onCreate");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
+
         setRetainInstance(true);
     }
 
@@ -61,18 +60,18 @@ public class BasketFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
 
-        init();
+        initVars();
         loadData();
     }
 
-    private void init() {
+    private void initVars() {
         context = requireContext();
         activity = requireActivity();
         view = requireView();
-        dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
-        progressBar = activity.findViewById(R.id.progressBar);
         basketLv = view.findViewById(R.id.basketLv);
+        dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
     }
 
     private void loadData() {
@@ -88,8 +87,8 @@ public class BasketFragment extends Fragment {
                 });
     }
 
-    private void createAdapter(final Context context, List<BasketItemAndProduct> basketItemAndProducts) {
-        adapter = new BasketListAdapter(context, R.layout.basket_item, basketItemAndProducts);
+    private void createAdapter(final Context context, List<BasketItemAndProduct> items) {
+        adapter = new BasketListAdapter(context, R.layout.basket_item, items);
         adapter.setOnCloseClickListener((basketItemAndProduct, closeButton) -> new MaterialAlertDialogBuilder(context)
                 .setTitle("Подтверждение")
                 .setMessage("Удалить продукт '" + basketItemAndProduct.product.title + "' из корзины?")

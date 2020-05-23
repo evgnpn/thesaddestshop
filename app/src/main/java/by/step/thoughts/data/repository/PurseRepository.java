@@ -1,8 +1,9 @@
 package by.step.thoughts.data.repository;
 
-import by.step.thoughts.data.dao.PurchaseDao;
+import androidx.lifecycle.LiveData;
+import androidx.room.Query;
+
 import by.step.thoughts.data.dao.PurseDao;
-import by.step.thoughts.entity.Purchase;
 import by.step.thoughts.entity.Purse;
 
 public class PurseRepository extends BaseRepository<Purse> {
@@ -11,5 +12,8 @@ public class PurseRepository extends BaseRepository<Purse> {
         super(purseDao);
     }
 
-
+    @Query("SELECT * FROM Purses WHERE id = :id")
+    public LiveData<Purse> getById(String id) {
+        return ((PurseDao) getDao()).getById(id);
+    }
 }

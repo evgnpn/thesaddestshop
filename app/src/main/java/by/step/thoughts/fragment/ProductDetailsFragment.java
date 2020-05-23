@@ -1,7 +1,6 @@
 package by.step.thoughts.fragment;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -43,22 +41,6 @@ public class ProductDetailsFragment extends Fragment {
 
     private Product product;
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        Log.i(LOG_TAG, "ProductDetailsFragment onHiddenChanged: " + hidden);
-        addToBasketButton.setVisibility(hidden ? View.INVISIBLE : View.VISIBLE);
-
-        if (hidden)
-            topAppBar.setNavigationIcon(null);
-        else
-            topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
-
-
-
-    }
-
-
     static ProductDetailsFragment newInstance(Product product) {
         ProductDetailsFragment fragment = new ProductDetailsFragment();
         Bundle args = new Bundle();
@@ -68,8 +50,40 @@ public class ProductDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        addToBasketButton.setVisibility(View.INVISIBLE);
+        topAppBar.setNavigationIcon(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        addToBasketButton.setVisibility(View.VISIBLE);
+        topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+        Log.i(LOG_TAG, "ProductDetailsFragment onHiddenChanged: " + hidden);
+
+        addToBasketButton.setVisibility(hidden ? View.INVISIBLE : View.VISIBLE);
+
+        if (hidden)
+            topAppBar.setNavigationIcon(null);
+        else
+            topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
+
+        setRetainInstance(true);
     }
 
     @Override
@@ -84,29 +98,6 @@ public class ProductDetailsFragment extends Fragment {
 
         init();
 
-        TextView productTitleTv = view.findViewById(R.id.productTitleTv);
-        TextView productDescriptionTv = view.findViewById(R.id.productDescriptionTv);
-        TextView productPriceTv = view.findViewById(R.id.productPriceTv);
-
-
-        if (product != null) {
-            productTitleTv.setText(product.title);
-            productDescriptionTv.setText(product.description);
-            productPriceTv.setText(String.format("%s%s", product.price, Constants.CURRENCY));
-        }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        addToBasketButton.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        addToBasketButton.setVisibility(View.INVISIBLE);
     }
 
     private void init() {
@@ -114,7 +105,9 @@ public class ProductDetailsFragment extends Fragment {
         activity = requireActivity();
         view = requireView();
         product = requireArguments().getParcelable(ARG_PRODUCT);
+
         dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
+
         addToBasketButton = activity.findViewById(R.id.addToBasketBtn);
         addToBasketButton.setOnClickListener(v -> {
 
@@ -133,5 +126,24 @@ public class ProductDetailsFragment extends Fragment {
             getParentFragmentManager().beginTransaction().remove(ProductDetailsFragment.this).commit();
             topAppBar.setNavigationIcon(null);
         });
+
+        addToBasketButton.setVisibility(View.VISIBLE);
+        topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
+
+        initView();
     }
+
+    private void initView() {
+        TextView productTitleTv = view.findViewById(R.id.productTitleTv);
+        TextView productDescriptionTv = view.findViewById(R.id.productDescriptionTv);
+        TextView productPriceTv = view.findViewById(R.id.productPriceTv);
+
+        if (product != null) {
+            productTitleTv.setText(product.title);
+            productDescriptionTv.setText(product.description);
+            productPriceTv.setText(String.format("%s%s", product.price, Constants.CURRENCY));
+        }
+    }
+
+
 }

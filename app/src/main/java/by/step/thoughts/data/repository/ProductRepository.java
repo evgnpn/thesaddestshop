@@ -9,19 +9,5 @@ public class ProductRepository extends BaseRepository<Product> {
         super(productDao);
     }
 
-//    public LiveData<List<Product>> getAll() {
-//        return productDao.getAll();
-//    }
-//
-//    public void insert(Product... products) {
-//        new InsertAsyncTask<>(productDao).execute(products);
-//    }
-//
-//    public void delete(Product... products) {
-//        new DeleteAsyncTask<>(productDao).execute(products);
-//    }
-//
-//    public void update(Product... products) {
-//        new UpdateAsyncTask<>(productDao).execute(products);
-//    }
+
 }

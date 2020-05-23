@@ -11,8 +11,8 @@ import java.util.List;
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.entity.Category;
-import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.entity.Product;
+import by.step.thoughts.entity.relation.CategoryWithProducts;
 
 public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -96,12 +96,7 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
         final int SHORT_TEXT_SIZE = 100;
 
         if (onChildClickAction != null) {
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onChildClickAction.accept(categoryWithProducts.get(groupPosition).category, product);
-                }
-            });
+            view.setOnClickListener(v -> onChildClickAction.accept(categoryWithProducts.get(groupPosition).category, product));
         }
 
         TextView productTitleTv = view.findViewById(R.id.productTitleTv);

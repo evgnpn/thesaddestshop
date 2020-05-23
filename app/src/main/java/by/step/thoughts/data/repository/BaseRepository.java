@@ -12,16 +12,12 @@ public abstract class BaseRepository<TEntity> {
 
     private DataAccessObject<TEntity> dao;
 
-    public BaseRepository(DataAccessObject<TEntity> dao) {
+    BaseRepository(DataAccessObject<TEntity> dao) {
         this.dao = dao;
     }
 
     public LiveData<List<TEntity>> getAll() {
         return dao.getAll();
-    }
-
-    public void insert(TEntity entity) {
-        new InsertAsyncTask<>(dao).execute(entity);
     }
 
     public void insert(TEntity[] entities) {

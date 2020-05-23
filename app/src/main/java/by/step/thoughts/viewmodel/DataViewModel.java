@@ -1,7 +1,5 @@
 package by.step.thoughts.viewmodel;
 
-import android.widget.ProgressBar;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

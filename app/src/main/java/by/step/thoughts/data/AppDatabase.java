@@ -21,12 +21,6 @@ import by.step.thoughts.entity.Purse;
 @Database(version = 1, entities = {Category.class, Product.class, Purchase.class, BasketItem.class, Purse.class})
 public abstract class AppDatabase extends RoomDatabase {
 
-    abstract public CategoryDao getCategoryDao();
-    abstract public ProductDao getProductDao();
-    abstract public PurchaseDao getPurchaseDao();
-    abstract public BasketItemDao getBasketItemDao();
-    abstract public PurseDao getPurseDaoDao();
-
     private static AppDatabase INSTANCE;
 
     public static AppDatabase getDatabase(final Context context) {
@@ -41,4 +35,14 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    abstract public CategoryDao getCategoryDao();
+
+    abstract public ProductDao getProductDao();
+
+    abstract public PurchaseDao getPurchaseDao();
+
+    abstract public BasketItemDao getBasketItemDao();
+
+    abstract public PurseDao getPurseDaoDao();
 }

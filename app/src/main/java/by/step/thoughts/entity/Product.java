@@ -16,22 +16,28 @@ import androidx.room.PrimaryKey;
         indices = @Index(value = "categoryId"))
 public class Product implements Parcelable {
 
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
-
     @ColumnInfo(name = "title")
     public String title;
-
     @ColumnInfo(name = "description")
     public String description;
-
     @ColumnInfo(name = "price")
     public double price;
-
     @ColumnInfo(name = "image")
     public byte[] image;
-
     @ColumnInfo(name = "categoryId")
     public int categoryId;
 
@@ -47,18 +53,6 @@ public class Product implements Parcelable {
         image = in.createByteArray();
         categoryId = in.readInt();
     }
-
-    public static final Creator<Product> CREATOR = new Creator<Product>() {
-        @Override
-        public Product createFromParcel(Parcel in) {
-            return new Product(in);
-        }
-
-        @Override
-        public Product[] newArray(int size) {
-            return new Product[size];
-        }
-    };
 
     @Ignore
     @Override
