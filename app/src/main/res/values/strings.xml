@@ -29,4 +29,8 @@
     <string name="buy">Купить</string>
     <string name="add_to_basket">Добавить в корзину</string>
     <string name="store">Магазин</string>
+    <string name="quantity">Quantity</string>
+    <string name="multiply">*</string>
+    <string name="res">RES</string>
+    <string name="equals">=</string>
 </resources>

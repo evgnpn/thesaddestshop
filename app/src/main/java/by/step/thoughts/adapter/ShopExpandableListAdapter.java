@@ -79,8 +79,8 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
 
         CategoryWithProducts categoryWithProducts = (CategoryWithProducts) getGroup(groupPosition);
 
-        TextView categoryTitleTv = view.findViewById(R.id.categoryTitleTv);
-        TextView categoryProductCount = view.findViewById(R.id.categoryProductCount);
+        TextView categoryTitleTv = view.findViewById(R.id.title);
+        TextView categoryProductCount = view.findViewById(R.id.quantity);
 
         categoryTitleTv.setText(categoryWithProducts.category.title);
         categoryProductCount.setText(String.valueOf(categoryWithProducts.products.size()));

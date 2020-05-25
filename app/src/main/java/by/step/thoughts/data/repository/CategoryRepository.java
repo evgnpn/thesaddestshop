@@ -18,19 +18,4 @@ public class CategoryRepository extends BaseRepository<Category> {
         return ((CategoryDao) getDao()).getCategoryWithProducts();
     }
 
-//    public LiveData<List<Category>> getAll() {
-//        return categoryDao.getAll();
-//    }
-//
-//    public void insert(Category... categories) {
-//        new InsertAsyncTask<>(categoryDao).execute(categories);
-//    }
-//
-//    public void delete(Category... categories) {
-//        new DeleteAsyncTask<>(categoryDao).execute(categories);
-//    }
-//
-//    public void update(Category... categories) {
-//        new UpdateAsyncTask<>(categoryDao).execute(categories);
-//    }
 }

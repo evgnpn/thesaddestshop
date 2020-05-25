@@ -37,7 +37,7 @@ public class CategoryListAdapter extends ArrayAdapter<Category> {
 
         Category category = getItem(position);
 
-        TextView categoryTitleTv = view.findViewById(R.id.categoryTitleTv);
+        TextView categoryTitleTv = view.findViewById(R.id.title);
         // TextView categoryProductCount = convertView.findViewById(R.id.categoryProductCount);
 
         if (category != null) {

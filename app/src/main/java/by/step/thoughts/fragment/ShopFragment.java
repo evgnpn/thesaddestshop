@@ -86,7 +86,7 @@ public class ShopFragment extends Fragment {
     }
 
     private void createAdapter(Context context, List<CategoryWithProducts> items) {
-        adapter = new ShopExpandableListAdapter(context, R.layout.category_item, R.layout.product_item, items);
+        adapter = new ShopExpandableListAdapter(context, R.layout.group_item, R.layout.product_item, items);
         adapter.setOnChildClickAction((category, product) -> getChildFragmentManager().beginTransaction()
                 .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
                 .commit());

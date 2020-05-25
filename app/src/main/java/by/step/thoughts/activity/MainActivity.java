@@ -23,6 +23,7 @@ import by.step.thoughts.data.repository.PurchaseRepository;
 import by.step.thoughts.data.repository.PurseRepository;
 import by.step.thoughts.entity.relation.BasketItemAndProduct;
 import by.step.thoughts.fragment.BasketFragment;
+import by.step.thoughts.fragment.PurchasesFragment;
 import by.step.thoughts.fragment.PurseFragment;
 import by.step.thoughts.fragment.ShopFragment;
 import by.step.thoughts.viewmodel.DataViewModel;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
 
-        initViews();
+        initVars();
 
         if (savedInstanceState == null) {
             initFragments();
@@ -54,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initViewModels();
+        setObservers();
         configureBottomNavBar();
     }
 
-    private void initViews() {
+    private void initVars() {
         topAppBar = findViewById(R.id.topAppBar);
         bottomNavBar = findViewById(R.id.bottomNavBar);
         progressBar = findViewById(R.id.progressBar);
@@ -75,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
                         new PurchaseRepository(database.getPurchaseDao()),
                         new PurseRepository(database.getPurseDaoDao())))
                 .get(DataViewModel.class);
-
-        setObservers();
     }
 
     private void setObservers() {
@@ -85,13 +85,14 @@ public class MainActivity extends AppCompatActivity {
                 isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE));
 
         dataViewModel.getBasketItemRepository().getBasketItemAndProducts().observe(this, items -> {
-
             int amountSum = 0;
-
             for (BasketItemAndProduct item : items)
                 amountSum += item.basketItem.amount;
-
             bottomNavBar.getOrCreateBadge(R.id.basket_page).setNumber(amountSum);
+        });
+
+        dataViewModel.getPurchaseRepository().getAll().observe(this, items -> {
+            bottomNavBar.getOrCreateBadge(R.id.purchases_page).setNumber(items.size());
         });
     }
 
@@ -102,11 +103,13 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment shopFragment = new ShopFragment();
         Fragment basketFragment = new BasketFragment();
+        Fragment purchasesFragment = new PurchasesFragment();
         Fragment purseFragment = new PurseFragment();
 
         fragmentTransaction
                 .add(R.id.container, shopFragment, ShopFragment.TAG).show(shopFragment)
                 .add(R.id.container, basketFragment, BasketFragment.TAG).hide(basketFragment)
+                .add(R.id.container, purchasesFragment, PurchasesFragment.TAG).hide(purchasesFragment)
                 .add(R.id.container, purseFragment, PurseFragment.TAG).hide(purseFragment);
 
         fragmentTransaction.commit();
@@ -143,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.basket_page:
                     switchFragment(BasketFragment.TAG);
                     return true;
+                case R.id.purchases_page:
+                    switchFragment(PurchasesFragment.TAG);
+                    return true;
                 case R.id.purse_page:
                     switchFragment(PurseFragment.TAG);
                     return true;
@@ -150,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                     return false;
             }
         });
-
     }
 
     private void navigate() {
@@ -162,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
             return R.id.shop_page;
         if (BasketFragment.TAG.equals(tag))
             return R.id.basket_page;
+        if (PurchasesFragment.TAG.equals(tag))
+            return R.id.purchases_page;
         if (PurseFragment.TAG.equals(tag))
             return R.id.purse_page;
         return -1;

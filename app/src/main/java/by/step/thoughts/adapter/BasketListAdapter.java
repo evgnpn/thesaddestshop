@@ -19,11 +19,16 @@ public class BasketListAdapter extends ArrayAdapter<BasketItemAndProduct> {
 
     private int layoutResource;
     private OnCloseClickListener onCloseClickListener;
+    private List<BasketItemAndProduct> basketItemAndProducts;
 
     public BasketListAdapter(@NonNull Context context, int layoutResource, List<BasketItemAndProduct> basketItemAndProducts) {
         super(context, layoutResource, basketItemAndProducts);
         this.layoutResource = layoutResource;
-        this.addAll();
+        this.basketItemAndProducts = basketItemAndProducts;
+    }
+
+    public List<BasketItemAndProduct> getAll() {
+        return basketItemAndProducts;
     }
 
     public OnCloseClickListener getOnCloseClickListener() {

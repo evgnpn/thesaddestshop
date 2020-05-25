@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import by.step.thoughts.Constants;
 import by.step.thoughts.data.dao.BasketItemDao;
@@ -16,9 +17,11 @@ import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Category;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.entity.Purchase;
+import by.step.thoughts.entity.PurchaseItem;
 import by.step.thoughts.entity.Purse;
 
-@Database(version = 1, entities = {Category.class, Product.class, Purchase.class, BasketItem.class, Purse.class})
+@Database(version = 1, entities = {Category.class, Product.class, Purchase.class, PurchaseItem.class, BasketItem.class, Purse.class})
+@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;

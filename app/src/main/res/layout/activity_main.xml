@@ -13,30 +13,16 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
+                app:title="SomaticShop"
                 android:id="@+id/topAppBar"
                 style="@style/Widget.MaterialComponents.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:menu="@menu/top_app_bar">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addToBasketBtn"
-                        style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:text="@string/add_to_basket"
-                        android:textSize="12sp"
-                        android:visibility="invisible"
-                        app:icon="@drawable/ic_plus">
 
-                    </com.google.android.material.button.MaterialButton>
 
-                </FrameLayout>
 
             </com.google.android.material.appbar.MaterialToolbar>
 

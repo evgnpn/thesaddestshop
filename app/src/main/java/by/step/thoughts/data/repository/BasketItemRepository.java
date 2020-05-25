@@ -14,23 +14,11 @@ public class BasketItemRepository extends BaseRepository<BasketItem> {
         super(basketItemDao);
     }
 
-//    public LiveData<List<BasketItem>> getAll() {
-//        return getDao().getAll();
-//    }
+    public LiveData<BasketItem> findByProductId(int id) {
+        return ((BasketItemDao) getDao()).getByProductId(id);
+    }
 
     public LiveData<List<BasketItemAndProduct>> getBasketItemAndProducts() {
         return ((BasketItemDao) getDao()).getBasketItemAndProducts();
     }
-
-//    public void insert(BasketItem... basketItems) {
-//        new InsertAsyncTask<>(BasketItemDao).execute(basketItems);
-//    }
-//
-//    public void delete(BasketItem... basketItems) {
-//        new DeleteAsyncTask<>(BasketItemDao).execute(basketItems);
-//    }
-//
-//    public void update(BasketItem... basketItems) {
-//        new UpdateAsyncTask<>(BasketItemDao).execute(basketItems);
-//    }
 }

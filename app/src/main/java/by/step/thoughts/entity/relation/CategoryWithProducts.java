@@ -9,8 +9,10 @@ import by.step.thoughts.entity.Category;
 import by.step.thoughts.entity.Product;
 
 public class CategoryWithProducts {
+
     @Embedded
     public Category category;
+
     @Relation(
             parentColumn = "id",
             entityColumn = "categoryId"

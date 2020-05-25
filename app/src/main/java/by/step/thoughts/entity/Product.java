@@ -27,6 +27,7 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;

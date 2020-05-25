@@ -3,6 +3,7 @@ package by.step.thoughts.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -19,4 +20,13 @@ public class BasketItem {
 
     @ColumnInfo(name = "amount")
     public int amount;
+
+    public BasketItem() {
+    }
+
+    @Ignore
+    public BasketItem(int productId, int amount) {
+        this.productId = productId;
+        this.amount = amount;
+    }
 }
