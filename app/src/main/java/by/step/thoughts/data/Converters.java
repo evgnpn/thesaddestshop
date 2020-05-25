@@ -13,8 +13,12 @@ public class Converters {
             new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
     @TypeConverter
-    public static Date fromString(String value) throws ParseException {
-        return value == null ? null : dateFormatter.parse(value);
+    public static Date fromString(String value) {
+        try {
+            return dateFormatter.parse(value);
+        } catch (Exception e) {
+            return new Date();
+        }
     }
 
     @TypeConverter

@@ -18,10 +18,13 @@ import by.step.thoughts.entity.relation.CategoryWithProducts;
 public interface CategoryDao extends DataAccessObject<Category> {
 
     @Query("SELECT * FROM Categories")
-    LiveData<List<Category>> getAll();
+    List<Category> getAll();
+
+    @Query("SELECT * FROM Categories")
+    LiveData<List<Category>> getAllLiveData();
 
     @Query("SELECT * FROM Categories WHERE id = :id LIMIT 1")
-    LiveData<Category> getById(int id);
+    LiveData<Category> getByIdLiveData(int id);
 
     @Transaction
     @Query("SELECT * FROM Categories")

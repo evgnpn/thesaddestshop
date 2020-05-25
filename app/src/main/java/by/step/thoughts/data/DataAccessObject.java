@@ -5,7 +5,10 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 public interface DataAccessObject<TEntity> {
-    LiveData<List<TEntity>> getAll();
+
+    List<TEntity> getAll();
+
+    LiveData<List<TEntity>> getAllLiveData();
 
     void insert(TEntity[] entities);
 

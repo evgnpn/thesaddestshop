@@ -18,10 +18,13 @@ import by.step.thoughts.entity.PurchaseItem;
 public interface PurchaseItemDao extends DataAccessObject<Purchase> {
 
     @Query("SELECT * FROM PurchaseItems")
-    LiveData<List<Purchase>> getAll();
+    List<Purchase> getAll();
+
+    @Query("SELECT * FROM PurchaseItems")
+    LiveData<List<Purchase>> getAllLiveData();
 
     @Query("SELECT * FROM PurchaseItems WHERE id = :id LIMIT 1")
-    LiveData<PurchaseItem> getById(int id);
+    LiveData<PurchaseItem> getByIdLiveData(int id);
 
     @Insert
     void insert(PurchaseItem... purchaseItems);

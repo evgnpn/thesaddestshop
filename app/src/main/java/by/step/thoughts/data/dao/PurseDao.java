@@ -16,7 +16,10 @@ import by.step.thoughts.entity.Purse;
 public interface PurseDao extends DataAccessObject<Purse> {
 
     @Query("SELECT id, money FROM Purses")
-    LiveData<List<Purse>> getAll();
+    List<Purse> getAll();
+
+    @Query("SELECT id, money FROM Purses")
+    LiveData<List<Purse>> getAllLiveData();
 
     @Query("SELECT id, money FROM Purses WHERE id = :id LIMIT 1")
     LiveData<Purse> getById(String id);

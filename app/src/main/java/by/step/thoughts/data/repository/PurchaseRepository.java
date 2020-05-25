@@ -15,7 +15,7 @@ public class PurchaseRepository extends BaseRepository<Purchase> {
     }
 
     public LiveData<Purchase> getById(int id) {
-        return ((PurchaseDao) getDao()).getById(id);
+        return ((PurchaseDao) getDao()).getByIdLiveData(id);
     }
 
     public LiveData<List<PurchaseWithItemsAndProduct>> purchaseWithItemsAndProducts() {

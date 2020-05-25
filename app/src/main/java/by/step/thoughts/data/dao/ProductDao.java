@@ -16,10 +16,13 @@ import by.step.thoughts.entity.Product;
 public interface ProductDao extends DataAccessObject<Product> {
 
     @Query("SELECT * FROM Products")
-    LiveData<List<Product>> getAll();
+    List<Product> getAll();
+
+    @Query("SELECT * FROM Products")
+    LiveData<List<Product>> getAllLiveData();
 
     @Query("SELECT * FROM Products WHERE id = :id LIMIT 1")
-    LiveData<Product> getById(int id);
+    LiveData<Product> getByIdLiveData(int id);
 
     @Insert
     void insert(Product... products);

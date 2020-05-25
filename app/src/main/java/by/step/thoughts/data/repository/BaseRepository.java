@@ -17,7 +17,7 @@ public abstract class BaseRepository<TEntity> {
     }
 
     public LiveData<List<TEntity>> getAll() {
-        return dao.getAll();
+        return dao.getAllLiveData();
     }
 
     public void insert(TEntity[] entities) {

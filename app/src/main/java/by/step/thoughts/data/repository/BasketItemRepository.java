@@ -19,6 +19,6 @@ public class BasketItemRepository extends BaseRepository<BasketItem> {
     }
 
     public LiveData<List<BasketItemAndProduct>> getBasketItemAndProducts() {
-        return ((BasketItemDao) getDao()).getBasketItemAndProducts();
+        return ((BasketItemDao) getDao()).getBasketItemAndProductsLiveData();
     }
 }

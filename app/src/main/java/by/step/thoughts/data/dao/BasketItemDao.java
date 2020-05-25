@@ -18,14 +18,21 @@ import by.step.thoughts.entity.relation.BasketItemAndProduct;
 public interface BasketItemDao extends DataAccessObject<BasketItem> {
 
     @Query("SELECT * FROM BasketItems")
-    LiveData<List<BasketItem>> getAll();
+    List<BasketItem> getAll();
+
+    @Query("SELECT * FROM BasketItems")
+    LiveData<List<BasketItem>> getAllLiveData();
 
     @Query("SELECT * FROM BasketItems WHERE productId = :productId LIMIT 1")
     LiveData<BasketItem> getByProductId(int productId);
 
     @Transaction
     @Query("SELECT * FROM BasketItems")
-    LiveData<List<BasketItemAndProduct>> getBasketItemAndProducts();
+    LiveData<BasketItemAndProduct> getBasketItemAndProductLiveData();
+
+    @Transaction
+    @Query("SELECT * FROM BasketItems")
+    LiveData<List<BasketItemAndProduct>> getBasketItemAndProductsLiveData();
 
     @Insert
     void insert(BasketItem... basketItems);

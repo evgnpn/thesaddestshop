@@ -13,6 +13,6 @@ public class PurchaseItemRepository extends BaseRepository<Purchase> {
     }
 
     public LiveData<PurchaseItem> getById(int id) {
-        return ((PurchaseItemDao) getDao()).getById(id);
+        return ((PurchaseItemDao) getDao()).getByIdLiveData(id);
     }
 }
