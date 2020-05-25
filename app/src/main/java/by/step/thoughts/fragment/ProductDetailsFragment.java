@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -31,7 +32,8 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ProductDetailsFragment extends Fragment {
 
-    public static final String TAG = UUID.randomUUID().toString();
+    public static final String TAG = ProductDetailsFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+
     private static final String ARG_PRODUCT = "product";
 
     private View view;
@@ -53,71 +55,11 @@ public class ProductDetailsFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
-
-        controlsEnabled(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onResume");
-
-        controlsEnabled(true);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-
-        controlsEnabled(!hidden);
-    }
-
-    private void controlsEnabled(boolean enabled) {
-
-        if (enabled) {
-            addToBasketBtn = (MaterialButton) getLayoutInflater().inflate(R.layout.add_to_basket_button, topAppBar, false);
-            addToBasketBtn.setOnClickListener(v -> {
-
-                dataViewModel.setLoadingStatus(true);
-                BasketItemRepository repository = dataViewModel.getBasketItemRepository();
-                LiveData<BasketItem> basketItemLiveData = repository.findByProductId(product.id);
-
-                basketItemLiveData.observe(activity, item -> {
-
-                    if (item == null) {
-                        BasketItem basketItem = new BasketItem(product.id, 1);
-                        dataViewModel.getBasketItemRepository().insert(new BasketItem[]{basketItem});
-                    } else {
-                        item.amount++;
-                        dataViewModel.getBasketItemRepository().update(new BasketItem[]{item});
-                    }
-
-                    basketItemLiveData.removeObservers(activity);
-
-                    Snackbar.make(view, "Добавлено", Snackbar.LENGTH_SHORT)
-                            .setAnchorView(R.id.bottomNavBar).show();
-
-                    dataViewModel.setLoadingStatus(false);
-                });
-            });
-            topAppBar.addView(addToBasketBtn);
-            topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
-        } else {
-            topAppBar.removeView(addToBasketBtn);
-            topAppBar.setNavigationIcon(null);
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
 
         setRetainInstance(true);
-
     }
 
     @Override
@@ -133,11 +75,39 @@ public class ProductDetailsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
 
-
         initArgs();
         initView();
+    }
 
-        setListeners();
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onResume");
+
+        if (!isHidden())
+            configureTopAppBar(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
+
+        configureTopAppBar(false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onDestroy");
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+
+        configureTopAppBar(!hidden);
     }
 
     private void initArgs() {
@@ -148,16 +118,6 @@ public class ProductDetailsFragment extends Fragment {
         product = requireArguments().getParcelable(ARG_PRODUCT);
         dataViewModel = new ViewModelProvider(activity).get(DataViewModel.class);
         topAppBar = activity.findViewById(R.id.topAppBar);
-
-
-        //  addToBasketButton = activity.findViewById(R.id.addToBasketBtn);
-    }
-
-    private void setListeners() {
-        topAppBar.setNavigationOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .remove(ProductDetailsFragment.this)
-                        .commit());
     }
 
     private void initView() {
@@ -171,5 +131,51 @@ public class ProductDetailsFragment extends Fragment {
             productDescriptionTv.setText(product.description);
             productPriceTv.setText(String.format("%s%s", product.price, Constants.CURRENCY));
         }
+    }
+
+    private void configureTopAppBar(boolean visible) {
+
+        if (visible) {
+            addToBasketBtn = (MaterialButton) getLayoutInflater()
+                    .inflate(R.layout.add_to_basket_button, topAppBar, false);
+            addToBasketBtn.setOnClickListener(v -> addToBasket());
+            topAppBar.addView(addToBasketBtn);
+            topAppBar.setNavigationIcon(R.drawable.ic_back_arrow);
+            topAppBar.setNavigationOnClickListener(v ->
+                    getParentFragmentManager().beginTransaction()
+                            .remove(ProductDetailsFragment.this).commit());
+        } else {
+            topAppBar.removeView(addToBasketBtn);
+            topAppBar.setNavigationIcon(null);
+            topAppBar.setNavigationOnClickListener(null);
+        }
+    }
+
+    private void addToBasket() {
+
+        dataViewModel.setLoadingStatus(true);
+
+        LiveData<BasketItem> basketItemLiveData = dataViewModel.getBasketItemRepository()
+                .findByProductId(product.id);
+
+        basketItemLiveData.observe(activity, new Observer<BasketItem>() {
+            @Override
+            public void onChanged(BasketItem item) {
+                if (item == null) {
+                    BasketItem basketItem = new BasketItem(product.id, 1);
+                    dataViewModel.getBasketItemRepository().insert(new BasketItem[]{basketItem});
+                } else {
+                    item.amount++;
+                    dataViewModel.getBasketItemRepository().update(new BasketItem[]{item});
+                }
+
+                Snackbar.make(view, "Добавлено", Snackbar.LENGTH_SHORT)
+                        .setAnchorView(R.id.bottomNavBar).show();
+
+                dataViewModel.setLoadingStatus(false);
+
+                basketItemLiveData.removeObserver(this);
+            }
+        });
     }
 }

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         new BasketItemRepository(database.getBasketItemDao()),
                         new CategoryRepository(database.getCategoryDao()),
                         new PurchaseRepository(database.getPurchaseDao()),
-                        new PurseRepository(database.getPurseDaoDao())))
+                        new PurseRepository(database.getPurseDao())))
                 .get(DataViewModel.class);
     }
 

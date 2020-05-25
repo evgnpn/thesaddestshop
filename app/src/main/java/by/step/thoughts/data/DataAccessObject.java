@@ -10,7 +10,7 @@ public interface DataAccessObject<TEntity> {
 
     LiveData<List<TEntity>> getAllLiveData();
 
-    void insert(TEntity[] entities);
+    long[] insert(TEntity[] entities);
 
     void delete(TEntity[] entities);
 

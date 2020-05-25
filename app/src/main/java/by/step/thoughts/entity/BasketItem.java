@@ -16,7 +16,7 @@ public class BasketItem {
     // PK & FK
     @PrimaryKey
     @ColumnInfo(name = "productId")
-    public int productId;
+    public long productId;
 
     @ColumnInfo(name = "amount")
     public int amount;
@@ -25,7 +25,7 @@ public class BasketItem {
     }
 
     @Ignore
-    public BasketItem(int productId, int amount) {
+    public BasketItem(long productId, int amount) {
         this.productId = productId;
         this.amount = amount;
     }

@@ -14,6 +14,6 @@ public class PurseRepository extends BaseRepository<Purse> {
 
     @Query("SELECT * FROM Purses WHERE id = :id")
     public LiveData<Purse> getById(String id) {
-        return ((PurseDao) getDao()).getById(id);
+        return ((PurseDao) getDao()).getByIdLiveData(id);
     }
 }

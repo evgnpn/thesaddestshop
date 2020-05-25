@@ -32,7 +32,7 @@ public interface PurchaseDao extends DataAccessObject<Purchase> {
     LiveData<List<PurchaseWithItemsAndProduct>> purchaseWithItemsAndProducts();
 
     @Insert
-    void insert(Purchase... purchases);
+    long[] insert(Purchase... purchases);
 
     @Delete
     void delete(Purchase... purchases);

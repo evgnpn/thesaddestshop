@@ -30,7 +30,7 @@ public class Product implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    public int id;
+    public long id;
     @ColumnInfo(name = "title")
     public String title;
     @ColumnInfo(name = "description")
@@ -40,19 +40,19 @@ public class Product implements Parcelable {
     @ColumnInfo(name = "image")
     public byte[] image;
     @ColumnInfo(name = "categoryId")
-    public int categoryId;
+    public long categoryId;
 
     public Product() {
     }
 
     @Ignore
     protected Product(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         title = in.readString();
         description = in.readString();
         price = in.readDouble();
         image = in.createByteArray();
-        categoryId = in.readInt();
+        categoryId = in.readLong();
     }
 
     @Ignore
@@ -64,11 +64,11 @@ public class Product implements Parcelable {
     @Ignore
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeDouble(price);
         dest.writeByteArray(image);
-        dest.writeInt(categoryId);
+        dest.writeLong(categoryId);
     }
 }

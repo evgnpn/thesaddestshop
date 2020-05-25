@@ -1,4 +1,4 @@
-package by.step.thoughts.data;
+package by.step.thoughts;
 
 import androidx.room.TypeConverter;
 

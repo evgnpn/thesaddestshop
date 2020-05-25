@@ -22,10 +22,13 @@ public interface PurseDao extends DataAccessObject<Purse> {
     LiveData<List<Purse>> getAllLiveData();
 
     @Query("SELECT id, money FROM Purses WHERE id = :id LIMIT 1")
-    LiveData<Purse> getById(String id);
+    Purse getById(String id);
+
+    @Query("SELECT id, money FROM Purses WHERE id = :id LIMIT 1")
+    LiveData<Purse> getByIdLiveData(String id);
 
     @Insert
-    void insert(Purse... purses);
+    long[] insert(Purse... purses);
 
     @Delete
     void delete(Purse... purses);

@@ -8,10 +8,12 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 import by.step.thoughts.Constants;
+import by.step.thoughts.Converters;
 import by.step.thoughts.data.dao.BasketItemDao;
 import by.step.thoughts.data.dao.CategoryDao;
 import by.step.thoughts.data.dao.ProductDao;
 import by.step.thoughts.data.dao.PurchaseDao;
+import by.step.thoughts.data.dao.PurchaseItemDao;
 import by.step.thoughts.data.dao.PurseDao;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Category;
@@ -45,7 +47,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
     abstract public PurchaseDao getPurchaseDao();
 
+    abstract public PurchaseItemDao getPurchaseItemDao();
+
     abstract public BasketItemDao getBasketItemDao();
 
-    abstract public PurseDao getPurseDaoDao();
+    abstract public PurseDao getPurseDao();
 }

@@ -14,8 +14,16 @@ public class Purchase {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    public int id;
+    public long id;
 
     @ColumnInfo(name = "date")
     public Date date;
+
+    public Purchase() {
+    }
+
+    @Ignore
+    public Purchase(Date date) {
+        this.date = date;
+    }
 }

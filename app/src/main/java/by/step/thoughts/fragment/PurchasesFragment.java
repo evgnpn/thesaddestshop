@@ -3,11 +3,14 @@ package by.step.thoughts.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -25,7 +28,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class PurchasesFragment extends Fragment {
 
-    public static final String TAG = UUID.randomUUID().toString();
+    public static final String TAG = PurchasesFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;
@@ -39,12 +42,16 @@ public class PurchasesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
 
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
+
         return inflater.inflate(R.layout.fragment_purchases, container, false);
     }
 
@@ -55,6 +62,16 @@ public class PurchasesFragment extends Fragment {
 
         initVars();
         loadData();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+
+        Fragment detailsFragment = getChildFragmentManager().findFragmentByTag(ProductDetailsFragment.TAG);
+        if (detailsFragment != null)
+            detailsFragment.onHiddenChanged(hidden);
     }
 
     private void loadData() {
@@ -78,8 +95,9 @@ public class PurchasesFragment extends Fragment {
 
     private void createAdapter(Context context, List<PurchaseWithItemsAndProduct> items) {
         adapter = new PurchasesExpandableListAdapter(context, R.layout.group_item, R.layout.product_item_with_quantity, items);
-        adapter.setOnChildClickAction((purchase, purchaseItem, product) -> getChildFragmentManager().beginTransaction()
-                .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
-                .commit());
+        adapter.setOnChildClickAction((purchase, purchaseItem, product) ->
+                getChildFragmentManager().beginTransaction()
+                        .add(R.id.container, ProductDetailsFragment.newInstance(product), ProductDetailsFragment.TAG)
+                        .commit());
     }
 }

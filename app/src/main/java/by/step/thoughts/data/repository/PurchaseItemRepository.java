@@ -6,7 +6,7 @@ import by.step.thoughts.data.dao.PurchaseItemDao;
 import by.step.thoughts.entity.Purchase;
 import by.step.thoughts.entity.PurchaseItem;
 
-public class PurchaseItemRepository extends BaseRepository<Purchase> {
+public class PurchaseItemRepository extends BaseRepository<PurchaseItem> {
 
     public PurchaseItemRepository(PurchaseItemDao purchaseItemDao) {
         super(purchaseItemDao);

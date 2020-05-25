@@ -26,7 +26,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ShopFragment extends Fragment {
 
-    public static final String TAG = UUID.randomUUID().toString();
+    public static final String TAG = ShopFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;
@@ -45,15 +45,6 @@ public class ShopFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-
-        Fragment detailsFragment = getChildFragmentManager().findFragmentByTag(ProductDetailsFragment.TAG);
-        if (detailsFragment != null)
-            detailsFragment.onHiddenChanged(hidden);
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.shop_fragment, container, false);
@@ -66,6 +57,36 @@ public class ShopFragment extends Fragment {
 
         initVars();
         loadData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onResume");
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onDestroy");
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+
+        Fragment detailsFragment = getChildFragmentManager().findFragmentByTag(ProductDetailsFragment.TAG);
+        if (detailsFragment != null)
+            detailsFragment.onHiddenChanged(hidden);
     }
 
     private void initVars() {

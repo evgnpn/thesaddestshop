@@ -3,15 +3,18 @@ package by.step.thoughts.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -33,7 +36,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class PurseFragment extends Fragment {
 
-    public static final String TAG = UUID.randomUUID().toString();
+    public static final String TAG = PurseFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
 
     private MathExampleGenerator mathGen = new MathExampleGenerator();
     private MathExampleGenerator.Result genRes;
@@ -45,7 +48,8 @@ public class PurseFragment extends Fragment {
     private TextInputEditText answerTiet;
     private MaterialButton refreshMb;
     private MaterialButton sendMb;
-
+    private TextView balanceTv;
+    private TextView currencyTv;
 
     private DataViewModel dataViewModel;
 
@@ -60,6 +64,7 @@ public class PurseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
         return inflater.inflate(R.layout.fragment_purse, container, false);
     }
 
@@ -71,12 +76,9 @@ public class PurseFragment extends Fragment {
         initVars();
         generateExample();
 
-        dataViewModel.getPurseRepository().getById("PRIMARY").observe(activity, purse -> {
+        loadData();
 
-            if (purse != null) {
-                Toast.makeText(context, "purse: " + purse.money, Toast.LENGTH_SHORT).show();
-            }
-        });
+        balanceTv.setText(Constants.CURRENCY);
 
         setListeners();
 
@@ -86,7 +88,27 @@ public class PurseFragment extends Fragment {
         context = requireContext();
         activity = requireActivity();
         view = requireView();
+        balanceTv = view.findViewById(R.id.balance);
+        currencyTv = view.findViewById(R.id.currency);
         answerTil = view.findViewById(R.id.answerTil);
+        answerTil.setError(null);
+        answerTil.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                answerTil.setError(null);
+            }
+        });
+
         answerTiet = view.findViewById(R.id.answerTiet);
         refreshMb = view.findViewById(R.id.refreshBtn);
         sendMb = view.findViewById(R.id.sendBtn);
@@ -105,24 +127,41 @@ public class PurseFragment extends Fragment {
                 int answer = Integer.parseInt(text.toString());
                 if (genRes.getRes() == answer) {
 
-                    dataViewModel.getPurseRepository().getById("PRIMARY").observe(activity, purse -> {
-                        double randDouble = new Random().nextDouble() * 10;
-                        purse.money += randDouble;
-                        Snackbar.make(view, "+" + randDouble + " " + Constants.CURRENCY, Snackbar.LENGTH_SHORT)
-                                .setAnchorView(R.id.bottomNavBar).show();
-                        dataViewModel.getPurseRepository().update(new Purse[]{purse});
+                    LiveData<Purse> purseLiveData =
+                            dataViewModel.getPurseRepository().getById("PRIMARY");
+
+                    purseLiveData.observe(activity, new Observer<Purse>() {
+                        @Override
+                        public void onChanged(Purse purse) {
+                            double randDouble = new Random().nextDouble() * 100;
+                            purse.money += randDouble;
+                            dataViewModel.getPurseRepository().update(new Purse[]{purse});
+
+                            Snackbar.make(view, "+" + randDouble + " "
+                                    + Constants.CURRENCY, Snackbar.LENGTH_SHORT)
+                                    .setAnchorView(R.id.bottomNavBar).show();
+
+                            generateExample();
+
+                            purseLiveData.removeObserver(this);
+                        }
                     });
                 } else {
                     answerTil.setError("Не правильный ответ");
                 }
             }
+        });
+    }
 
-            // generateExample();
+    private void loadData() {
+        dataViewModel.getPurseRepository().getById(Constants.PURSE_ID).observe(activity, purse -> {
+            balanceTv.setText(purse != null ? String.valueOf(purse.money) : "0");
         });
     }
 
     private void generateExample() {
         genRes = mathGen.next(1, 10);
         answerTil.setHint(genRes.getVal1() + " " + genRes.getOp() + " " + genRes.getVal2() + " =");
+        answerTil.setError(null);
     }
 }

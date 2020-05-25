@@ -25,7 +25,7 @@ public interface ProductDao extends DataAccessObject<Product> {
     LiveData<Product> getByIdLiveData(int id);
 
     @Insert
-    void insert(Product... products);
+    long[] insert(Product... products);
 
     @Delete
     void delete(Product... products);

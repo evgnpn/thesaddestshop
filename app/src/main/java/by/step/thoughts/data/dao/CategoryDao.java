@@ -31,7 +31,7 @@ public interface CategoryDao extends DataAccessObject<Category> {
     LiveData<List<CategoryWithProducts>> getCategoryWithProducts();
 
     @Insert
-    void insert(Category... categories);
+    long[] insert(Category... categories);
 
     @Delete
     void delete(Category... categories);

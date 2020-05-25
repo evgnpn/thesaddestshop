@@ -24,7 +24,11 @@ public interface BasketItemDao extends DataAccessObject<BasketItem> {
     LiveData<List<BasketItem>> getAllLiveData();
 
     @Query("SELECT * FROM BasketItems WHERE productId = :productId LIMIT 1")
-    LiveData<BasketItem> getByProductId(int productId);
+    LiveData<BasketItem> getByProductId(long productId);
+
+    @Transaction
+    @Query("SELECT * FROM BasketItems")
+    BasketItemAndProduct getBasketItemAndProduct();
 
     @Transaction
     @Query("SELECT * FROM BasketItems")
@@ -32,10 +36,14 @@ public interface BasketItemDao extends DataAccessObject<BasketItem> {
 
     @Transaction
     @Query("SELECT * FROM BasketItems")
+    List<BasketItemAndProduct> getBasketItemAndProducts();
+
+    @Transaction
+    @Query("SELECT * FROM BasketItems")
     LiveData<List<BasketItemAndProduct>> getBasketItemAndProductsLiveData();
 
     @Insert
-    void insert(BasketItem... basketItems);
+    long[] insert(BasketItem... basketItems);
 
     @Delete
     void delete(BasketItem... basketItems);

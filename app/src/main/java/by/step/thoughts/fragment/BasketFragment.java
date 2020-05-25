@@ -7,13 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -24,20 +23,20 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.UUID;
 
+import by.step.thoughts.Constants;
 import by.step.thoughts.R;
 import by.step.thoughts.adapter.BasketListAdapter;
-import by.step.thoughts.data.repository.BasketItemRepository;
-import by.step.thoughts.data.repository.PurchaseRepository;
+import by.step.thoughts.data.AppDatabase;
 import by.step.thoughts.entity.BasketItem;
-import by.step.thoughts.entity.Purchase;
 import by.step.thoughts.entity.relation.BasketItemAndProduct;
+import by.step.thoughts.task.PurchaseTask;
 import by.step.thoughts.viewmodel.DataViewModel;
 
 import static by.step.thoughts.Constants.LOG_TAG;
 
 public class BasketFragment extends Fragment {
 
-    public static final String TAG = UUID.randomUUID().toString();
+    public static final String TAG = BasketFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;
@@ -53,78 +52,6 @@ public class BasketFragment extends Fragment {
     private String lastDeletedString = null;
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
-
-        // controlsEnabled(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onResume");
-
-        // controlsEnabled(true);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-
-        controlsEnabled(!hidden);
-    }
-
-    private void controlsEnabled(boolean enabled) {
-
-        if (enabled) {
-            buyBtn = (MaterialButton) getLayoutInflater().inflate(R.layout.buy_button, topAppBar, false);
-            buyBtn.setOnClickListener(v -> {
-
-                transferItems();
-
-                buyBtn.setEnabled(false);
-
-            });
-            topAppBar.addView(buyBtn);
-            buyBtn.setEnabled(adapter.getCount() > 0);
-        } else {
-            topAppBar.removeView(buyBtn);
-        }
-    }
-
-    private void transferItems() {
-
-        dataViewModel.setLoadingStatus(true);
-
-        BasketItemRepository basketItemRepository = dataViewModel.getBasketItemRepository();
-        PurchaseRepository purchaseRepository = dataViewModel.getPurchaseRepository();
-
-        LiveData<List<BasketItem>> basketItemsLiveData = basketItemRepository.getAll();
-
-        basketItemsLiveData.observe(getViewLifecycleOwner(), new Observer<List<BasketItem>>() {
-            @Override
-            public void onChanged(List<BasketItem> items) {
-
-                if (items != null) {
-                    for (BasketItem basketItem : items) {
-
-                        // purchaseRepository.getPurchaseAndProductByProductId()
-
-                        //  purchaseRepository.insert(new Purchase[]{new Purchase(basketItem.amount, basketItem.productId)});
-
-                    }
-
-                    // basketItemRepository.delete(items);
-                }
-
-                basketItemsLiveData.removeObserver(this);
-                dataViewModel.setLoadingStatus(false);
-            }
-        });
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
@@ -135,6 +62,7 @@ public class BasketFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
         return inflater.inflate(R.layout.basket_fragment, container, false);
     }
 
@@ -145,8 +73,37 @@ public class BasketFragment extends Fragment {
 
         initVars();
         loadData();
+    }
 
-        controlsEnabled(!isHidden());
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onResume");
+
+        if (!isHidden())
+            configureTopAppBar(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
+
+        configureTopAppBar(false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onDestroy");
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+
+        configureTopAppBar(!hidden);
     }
 
     private void initVars() {
@@ -173,7 +130,102 @@ public class BasketFragment extends Fragment {
 
     private void createAdapter(final Context context, List<BasketItemAndProduct> items) {
         adapter = new BasketListAdapter(context, R.layout.basket_item, items);
-        adapter.setOnCloseClickListener((basketItemAndProduct, closeButton) -> new MaterialAlertDialogBuilder(context)
+        adapter.setOnCloseClickListener((basketItemAndProduct, closeButton) ->
+                showDialog(basketItemAndProduct));
+    }
+
+    private void showDeletedMessage(String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).setAnchorView(R.id.bottomNavBar).show();
+        lastDeletedString = null;
+    }
+
+    private void configureTopAppBar(boolean visible) {
+
+        if (visible) {
+            buyBtn = (MaterialButton) getLayoutInflater()
+                    .inflate(R.layout.buy_button, topAppBar, false);
+            buyBtn.setOnClickListener(v -> {
+
+                dataViewModel.getPurseRepository().getById(Constants.PURSE_ID).observe(activity, purse -> {
+
+
+                });
+
+
+                transferItems();
+
+            });
+            topAppBar.addView(buyBtn);
+
+            buyBtn.setEnabled(adapter.getCount() > 0);
+
+            dataViewModel.getBasketItemRepository().getAll().observe(activity, basketItems -> {
+
+                buyBtn.setEnabled(basketItems != null && basketItems.size() > 0);
+
+            });
+
+        } else {
+            topAppBar.removeView(buyBtn);
+        }
+    }
+
+    private void transferItems() {
+
+        AppDatabase database = AppDatabase.getDatabase(activity);
+
+        PurchaseTask purchaseTask = new PurchaseTask(database);
+
+        purchaseTask.setListener(new PurchaseTask.Listener() {
+            @Override
+            public void onStart() {
+                activity.runOnUiThread(() -> {
+                    dataViewModel.setLoadingStatus(true);
+                });
+            }
+
+            @Override
+            public void onLackOfBalance(double balance, double purchaseSum) {
+                activity.runOnUiThread(() -> {
+                    new MaterialAlertDialogBuilder(activity)
+                            .setTitle("Баланс")
+                            .setPositiveButton("ОК", (dialog, which) -> {
+                                dialog.cancel();
+                            }).setMessage("Не хватает денежных средств ("
+                            + (purchaseSum - balance) + " " + Constants.CURRENCY + " )")
+                            .create().show();
+                    dataViewModel.setLoadingStatus(false);
+                });
+            }
+
+            @Override
+            public void onError() {
+                activity.runOnUiThread(() -> {
+                    dataViewModel.setLoadingStatus(false);
+                    Toast.makeText(context, "Что то пошло не так", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onFinish() {
+
+                activity.runOnUiThread(() -> {
+                    dataViewModel.setLoadingStatus(false);
+
+                    new MaterialAlertDialogBuilder(activity)
+                            .setPositiveButton("ОК", (dialog, which) -> {
+                                dialog.cancel();
+                            }).setMessage("Покупка успешно совершена!").create().show();
+
+                });
+            }
+        });
+
+        database.getTransactionExecutor().execute(purchaseTask);
+    }
+
+    private void showDialog(BasketItemAndProduct basketItemAndProduct) {
+        new MaterialAlertDialogBuilder(context)
                 .setTitle("Подтверждение")
                 .setMessage("Удалить продукт '" + basketItemAndProduct.product.title + "' из корзины?")
                 .setPositiveButton("Удалить", (dialog, which) -> {
@@ -182,11 +234,6 @@ public class BasketFragment extends Fragment {
                     dataViewModel.getBasketItemRepository().delete(new BasketItem[]{basketItemAndProduct.basketItem});
                 })
                 .setNegativeButton("Отмена", null)
-                .create().show());
-    }
-
-    private void showDeletedMessage(String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).setAnchorView(R.id.bottomNavBar).show();
-        lastDeletedString = null;
+                .create().show();
     }
 }

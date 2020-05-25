@@ -14,7 +14,7 @@ public class BasketItemRepository extends BaseRepository<BasketItem> {
         super(basketItemDao);
     }
 
-    public LiveData<BasketItem> findByProductId(int id) {
+    public LiveData<BasketItem> findByProductId(long id) {
         return ((BasketItemDao) getDao()).getByProductId(id);
     }
 

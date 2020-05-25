@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp"
+    android:paddingHorizontal="26dp"
     android:paddingVertical="64dp">
 
     <LinearLayout
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:paddingLeft="14dp"
+            android:paddingHorizontal="14dp"
             android:text="$"
             android:textColor="#B19667"
             android:textSize="32sp" />
@@ -89,8 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="Ответить" />
-
+                android:text="@string/answer" />
 
         </LinearLayout>
     </LinearLayout>

@@ -13,12 +13,11 @@ import java.util.List;
 import java.util.Locale;
 
 import by.step.thoughts.Constants;
+import by.step.thoughts.Converters;
 import by.step.thoughts.R;
-import by.step.thoughts.data.Converters;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.entity.Purchase;
 import by.step.thoughts.entity.PurchaseItem;
-import by.step.thoughts.entity.relation.CategoryWithProducts;
 import by.step.thoughts.entity.relation.purchase.PurchaseItemAndProduct;
 import by.step.thoughts.entity.relation.purchase.PurchaseWithItemsAndProduct;
 
@@ -82,35 +81,44 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
+                             ViewGroup parent) {
 
-        View view = convertView != null ? convertView : View.inflate(context, groupLayoutResource, null);
+        View view = convertView != null ?
+                convertView : View.inflate(context, groupLayoutResource, null);
 
-        PurchaseWithItemsAndProduct purchaseWithItemsAndProduct = (PurchaseWithItemsAndProduct) getGroup(groupPosition);
+        PurchaseWithItemsAndProduct purchaseWithItemsAndProduct =
+                (PurchaseWithItemsAndProduct) getGroup(groupPosition);
 
         TextView titleTv = view.findViewById(R.id.title);
         TextView quantityTv = view.findViewById(R.id.quantity);
 
         titleTv.setText(Converters.dateToString(purchaseWithItemsAndProduct.purchase.date));
-        quantityTv.setText(String.valueOf(purchaseWithItemsAndProduct.purchaseItemAndProducts.size()));
+        quantityTv.setText(String.valueOf(
+                purchaseWithItemsAndProduct.purchaseItemAndProducts.size()));
 
         return view;
     }
 
     @Override
-    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, int childPosition,
+                             boolean isLastChild, View convertView, ViewGroup parent) {
 
-        View view = convertView != null ? convertView : View.inflate(context, childLayoutResource, null);
+        View view = convertView != null ?
+                convertView : View.inflate(context, childLayoutResource, null);
 
-        final PurchaseItemAndProduct purchaseItemAndProduct = (PurchaseItemAndProduct) getChild(groupPosition, childPosition);
+        final PurchaseItemAndProduct purchaseItemAndProduct =
+                (PurchaseItemAndProduct) getChild(groupPosition, childPosition);
 
 
         if (onChildClickAction != null) {
             view.setOnClickListener(v ->
                     onChildClickAction.accept(
                             items.get(groupPosition).purchase,
-                            items.get(groupPosition).purchaseItemAndProducts.get(childPosition).purchaseItem,
-                            items.get(groupPosition).purchaseItemAndProducts.get(childPosition).product));
+                            items.get(groupPosition).purchaseItemAndProducts
+                                    .get(childPosition).purchaseItem,
+                            items.get(groupPosition).purchaseItemAndProducts
+                                    .get(childPosition).product));
         }
 
         TextView titleTv = view.findViewById(R.id.title);
@@ -121,9 +129,12 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (purchaseItemAndProduct != null) {
             titleTv.setText(purchaseItemAndProduct.product.title);
-            priceTv.setText(String.format("%s%s", String.valueOf(purchaseItemAndProduct.product.price), Constants.CURRENCY));
+            priceTv.setText(String.format("%s%s", String.valueOf(
+                    purchaseItemAndProduct.product.price), Constants.CURRENCY));
             quantityTv.setText(String.valueOf(purchaseItemAndProduct.purchaseItem.amount));
-            priceSumTv.setText(String.format(Locale.getDefault(), "%.2f%s", purchaseItemAndProduct.product.price * purchaseItemAndProduct.purchaseItem.amount, Constants.CURRENCY));
+            priceSumTv.setText(String.format(Locale.getDefault(), "%.2f%s",
+                    purchaseItemAndProduct.product.price
+                            * purchaseItemAndProduct.purchaseItem.amount, Constants.CURRENCY));
 
 
             //setImageViewWithByteArray(productImageIv, product.image);

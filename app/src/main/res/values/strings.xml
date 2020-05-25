@@ -33,4 +33,5 @@
     <string name="multiply">*</string>
     <string name="res">RES</string>
     <string name="equals">=</string>
+    <string name="answer">Ответить</string>
 </resources>
