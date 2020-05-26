@@ -110,7 +110,6 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
         final PurchaseItemAndProduct purchaseItemAndProduct =
                 (PurchaseItemAndProduct) getChild(groupPosition, childPosition);
 
-
         if (onChildClickAction != null) {
             view.setOnClickListener(v ->
                     onChildClickAction.accept(
@@ -128,10 +127,14 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
         ImageView imageIv = view.findViewById(R.id.image);
 
         if (purchaseItemAndProduct != null) {
+
             titleTv.setText(purchaseItemAndProduct.product.title);
+
             priceTv.setText(String.format("%s%s", String.valueOf(
                     purchaseItemAndProduct.product.price), Constants.CURRENCY));
+
             quantityTv.setText(String.valueOf(purchaseItemAndProduct.purchaseItem.amount));
+
             priceSumTv.setText(String.format(Locale.getDefault(), "%.2f%s",
                     purchaseItemAndProduct.product.price
                             * purchaseItemAndProduct.purchaseItem.amount, Constants.CURRENCY));

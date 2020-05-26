@@ -1,6 +1,7 @@
 package by.step.thoughts.adapter;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -21,16 +22,21 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
     private int groupLayoutResource, childLayoutResource;
     private OnChildClickListener onChildClickAction;
 
-
-    public ShopExpandableListAdapter(
-            Context context,
-            int groupLayoutResource,
-            int childLayoutResource,
-            List<CategoryWithProducts> categoryWithProducts) {
+    public ShopExpandableListAdapter(Context context,
+                                     int groupLayoutResource, int childLayoutResource,
+                                     List<CategoryWithProducts> categoryWithProducts) {
         this.context = context;
         this.categoryWithProducts = categoryWithProducts;
         this.groupLayoutResource = groupLayoutResource;
         this.childLayoutResource = childLayoutResource;
+    }
+
+    public List<CategoryWithProducts> getCategoryWithProducts() {
+        return categoryWithProducts;
+    }
+
+    public void setCategoryWithProducts(List<CategoryWithProducts> categoryWithProducts) {
+        this.categoryWithProducts = categoryWithProducts;
     }
 
     public void setOnChildClickAction(OnChildClickListener onChildClickAction) {
@@ -73,9 +79,11 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
 
-        View view = convertView != null ? convertView : View.inflate(context, groupLayoutResource, null);
+        View view = convertView != null ?
+                convertView : View.inflate(context, groupLayoutResource, null);
 
         CategoryWithProducts categoryWithProducts = (CategoryWithProducts) getGroup(groupPosition);
 
@@ -89,15 +97,18 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild,
+                             View convertView, ViewGroup parent) {
 
-        View view = convertView != null ? convertView : View.inflate(context, childLayoutResource, null);
+        View view = convertView != null ?
+                convertView : View.inflate(context, childLayoutResource, null);
+
         final Product product = (Product) getChild(groupPosition, childPosition);
         final int SHORT_TEXT_SIZE = 100;
 
-        if (onChildClickAction != null) {
-            view.setOnClickListener(v -> onChildClickAction.accept(categoryWithProducts.get(groupPosition).category, product));
-        }
+        if (onChildClickAction != null)
+            view.setOnClickListener(v -> onChildClickAction
+                    .accept(categoryWithProducts.get(groupPosition).category, product));
 
         TextView productTitleTv = view.findViewById(R.id.productTitleTv);
         TextView productPriceTv = view.findViewById(R.id.productPriceTv);
@@ -105,14 +116,23 @@ public class ShopExpandableListAdapter extends BaseExpandableListAdapter {
 
         productTitleTv.setText(product.title);
         productPriceTv.setText(String.format("%s%s", product.price, Constants.CURRENCY));
-        productDescriptionTv.setText(product.description.length() > SHORT_TEXT_SIZE ? product.description.substring(0, SHORT_TEXT_SIZE) + "..." : product.description);
+        productDescriptionTv.setText(product.description.length() > SHORT_TEXT_SIZE ?
+                product.description.substring(0, SHORT_TEXT_SIZE) + "..." : product.description);
+
+        view.setOnLongClickListener(v -> false);
 
         return view;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
+
         return true;
+    }
+
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+        super.registerDataSetObserver(observer);
     }
 
     public interface OnChildClickListener {

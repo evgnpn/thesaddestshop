@@ -27,7 +27,7 @@ public class PurchaseItem {
     public int amount;
 
     @ColumnInfo(name = "productId")
-    public long productId;
+    public Long productId;
 
     @ColumnInfo(name = "purchaseId")
     public long purchaseId;

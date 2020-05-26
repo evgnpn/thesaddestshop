@@ -42,7 +42,7 @@
             android:layout_marginHorizontal="16dp"
             android:maxWidth="100dp"
             android:text="@string/price"
-            android:textColor="#887C37"
+            android:textColor="#7B8F80"
             android:textSize="14sp" />
 
     </LinearLayout>

@@ -56,12 +56,8 @@ public class BasketListAdapter extends ArrayAdapter<BasketItemAndProduct> {
             amountTv.setText(String.valueOf(basketItemAndProduct.basketItem.amount));
 
             if (onCloseClickListener != null) {
-                closeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onCloseClickListener.accept(basketItemAndProduct, closeBtn);
-                    }
-                });
+                closeBtn.setOnClickListener(v ->
+                        onCloseClickListener.accept(basketItemAndProduct, closeBtn));
             }
         }
 

@@ -84,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
         dataViewModel.getLoadStatus().observe(this,
                 isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE));
 
-        dataViewModel.getBasketItemRepository().getBasketItemAndProducts().observe(this, items -> {
+        dataViewModel.getBasketItemRepository().getBasketItemAndProducts()
+                .observe(this, items -> {
             int amountSum = 0;
             for (BasketItemAndProduct item : items)
                 amountSum += item.basketItem.amount;

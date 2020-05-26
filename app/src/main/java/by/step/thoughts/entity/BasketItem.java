@@ -9,7 +9,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(
         tableName = "BasketItems",
-        foreignKeys = @ForeignKey(entity = Product.class, parentColumns = "id", childColumns = "productId", onDelete = ForeignKey.CASCADE),
+        foreignKeys = @ForeignKey(entity = Product.class, parentColumns = "id",
+                childColumns = "productId", onDelete = ForeignKey.CASCADE),
         indices = @Index(value = "productId"))
 public class BasketItem {
 
