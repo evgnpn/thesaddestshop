@@ -36,7 +36,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class PurseFragment extends Fragment {
 
-    public static final String TAG = PurseFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+    public static final String TAG = UUID.randomUUID().toString();
 
     private MathExampleGenerator mathGen = new MathExampleGenerator();
     private MathExampleGenerator.Result genRes;
@@ -64,14 +64,16 @@ public class PurseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
         return inflater.inflate(R.layout.fragment_purse, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
 
         initVars();
         generateExample();

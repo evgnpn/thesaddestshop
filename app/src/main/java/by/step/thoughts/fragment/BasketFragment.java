@@ -36,7 +36,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class BasketFragment extends Fragment {
 
-    public static final String TAG = BasketFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+    public static final String TAG = UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;
@@ -54,7 +54,8 @@ public class BasketFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
 
         setRetainInstance(true);
     }
@@ -62,14 +63,16 @@ public class BasketFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
         return inflater.inflate(R.layout.basket_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
 
         initVars();
         loadData();
@@ -101,7 +104,8 @@ public class BasketFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onHiddenChanged (hidden: " + hidden + ")");
 
         configureTopAppBar(!hidden);
     }
@@ -221,7 +225,8 @@ public class BasketFragment extends Fragment {
                 .setPositiveButton("Удалить", (dialog, which) -> {
                     dataViewModel.setLoadingStatus(true);
                     lastDeletedString = basketItemAndProduct.product.title;
-                    dataViewModel.getBasketItemRepository().delete(new BasketItem[]{basketItemAndProduct.basketItem});
+                    dataViewModel.getBasketItemRepository()
+                            .delete(new BasketItem[]{basketItemAndProduct.basketItem});
                 })
                 .setNegativeButton("Отмена", null)
                 .create().show();

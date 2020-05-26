@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import by.step.thoughts.Constants;
 import by.step.thoughts.R;
-import by.step.thoughts.data.repository.BasketItemRepository;
 import by.step.thoughts.entity.BasketItem;
 import by.step.thoughts.entity.Product;
 import by.step.thoughts.viewmodel.DataViewModel;
@@ -32,7 +31,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ProductDetailsFragment extends Fragment {
 
-    public static final String TAG = ProductDetailsFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+    public static final String TAG = UUID.randomUUID().toString();
 
     private static final String ARG_PRODUCT = "product";
 
@@ -57,7 +56,8 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onCreate (savedInstance: " + (savedInstanceState != null) + ")");
 
         setRetainInstance(true);
     }
@@ -65,7 +65,8 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onCreateView (savedInstance: " + (savedInstanceState != null) + ")");
 
         return inflater.inflate(R.layout.fragment_details_view, container, false);
     }
@@ -73,7 +74,8 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onActivityCreated (savedInstance: " + (savedInstanceState != null) + ")");
 
         initArgs();
         initView();
@@ -105,7 +107,8 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onHiddenChanged (hidden: " + hidden + ")");
+        Log.i(LOG_TAG, "[" + this.getClass().getSimpleName()
+                + "] onHiddenChanged (hidden: " + hidden + ")");
 
         configureTopAppBar(!hidden);
     }

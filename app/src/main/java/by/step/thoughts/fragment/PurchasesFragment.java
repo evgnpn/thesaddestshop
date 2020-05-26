@@ -28,8 +28,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class PurchasesFragment extends Fragment {
 
-    public static final String TAG =
-            PurchasesFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+    public static final String TAG = UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;

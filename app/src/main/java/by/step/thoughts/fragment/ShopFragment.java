@@ -36,7 +36,7 @@ import static by.step.thoughts.Constants.LOG_TAG;
 
 public class ShopFragment extends Fragment {
 
-    public static final String TAG = ShopFragment.class.getSimpleName() + " " + UUID.randomUUID().toString();
+    public static final String TAG = UUID.randomUUID().toString();
 
     private Context context;
     private FragmentActivity activity;
