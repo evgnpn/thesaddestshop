@@ -1,5 +1,6 @@
 package by.step.thoughts.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import by.step.thoughts.R;
+import by.step.thoughts.activity.UpdateProductActivity;
 import by.step.thoughts.adapter.ShopExpandableListAdapter;
 import by.step.thoughts.entity.Category;
 import by.step.thoughts.entity.Product;
@@ -114,8 +116,11 @@ public class ShopFragment extends Fragment {
                 case 3: // edit product
                     product = bundle.getParcelable("PRODUCT");
 
+                    Intent intent = new Intent(activity, UpdateProductActivity.class);
+                    intent.putExtra("PRODUCT", product);
 
-                    Toast.makeText(context, "bbb", Toast.LENGTH_SHORT).show();
+                    startActivityForResult(intent, 1);
+
                     break;
                 default:
                     break;
@@ -123,6 +128,27 @@ public class ShopFragment extends Fragment {
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(context, resultCode + " result code", Toast.LENGTH_SHORT).show();
+                if (data != null) {
+                    Bundle bundle = data.getExtras();
+                    if (bundle != null) {
+                        Product product = bundle.getParcelable("PRODUCT");
+                        if (product != null) {
+                            dataViewModel.setLoadingStatus(true);
+                            dataViewModel.getProductRepository().update(new Product[]{product});
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -162,7 +188,6 @@ public class ShopFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.i(LOG_TAG, "[" + this.getClass().getSimpleName() + "] onPause");
-
     }
 
     @Override

@@ -72,7 +72,12 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return items.get(groupPosition).purchaseItemAndProducts.get(childPosition).product.id;
+
+        try {
+            return items.get(groupPosition).purchaseItemAndProducts.get(childPosition).product.id;
+        } catch (Exception ex) {
+            return 0;
+        }
     }
 
     @Override
@@ -107,42 +112,54 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
         View view = convertView != null ?
                 convertView : View.inflate(context, childLayoutResource, null);
 
-        final PurchaseItemAndProduct purchaseItemAndProduct =
-                (PurchaseItemAndProduct) getChild(groupPosition, childPosition);
-
-        if (onChildClickAction != null) {
-            view.setOnClickListener(v ->
-                    onChildClickAction.accept(
-                            items.get(groupPosition).purchase,
-                            items.get(groupPosition).purchaseItemAndProducts
-                                    .get(childPosition).purchaseItem,
-                            items.get(groupPosition).purchaseItemAndProducts
-                                    .get(childPosition).product));
-        }
-
         TextView titleTv = view.findViewById(R.id.title);
         TextView priceTv = view.findViewById(R.id.price);
         TextView quantityTv = view.findViewById(R.id.quantity);
         TextView priceSumTv = view.findViewById(R.id.priceSum);
         ImageView imageIv = view.findViewById(R.id.image);
 
-        if (purchaseItemAndProduct != null) {
+        try {
 
-            titleTv.setText(purchaseItemAndProduct.product.title);
+            final PurchaseItemAndProduct purchaseItemAndProduct =
+                    (PurchaseItemAndProduct) getChild(groupPosition, childPosition);
 
-            priceTv.setText(String.format("%s%s", String.valueOf(
-                    purchaseItemAndProduct.product.price), Constants.CURRENCY));
+            if (onChildClickAction != null) {
+                view.setOnClickListener(v ->
+                        onChildClickAction.accept(
+                                items.get(groupPosition).purchase,
+                                items.get(groupPosition).purchaseItemAndProducts
+                                        .get(childPosition).purchaseItem,
+                                items.get(groupPosition).purchaseItemAndProducts
+                                        .get(childPosition).product));
+            }
 
-            quantityTv.setText(String.valueOf(purchaseItemAndProduct.purchaseItem.amount));
+            if (purchaseItemAndProduct != null) {
 
-            priceSumTv.setText(String.format(Locale.getDefault(), "%.2f%s",
-                    purchaseItemAndProduct.product.price
-                            * purchaseItemAndProduct.purchaseItem.amount, Constants.CURRENCY));
+                titleTv.setText(purchaseItemAndProduct.product.title);
+
+                priceTv.setText(String.format("%s%s", String.valueOf(
+                        purchaseItemAndProduct.product.price), Constants.CURRENCY));
+
+                quantityTv.setText(String.valueOf(purchaseItemAndProduct.purchaseItem.amount));
+
+                priceSumTv.setText(String.format(Locale.getDefault(), "%.2f%s",
+                        purchaseItemAndProduct.product.price
+                                * purchaseItemAndProduct.purchaseItem.amount, Constants.CURRENCY));
 
 
-            //setImageViewWithByteArray(productImageIv, product.image);
+                //setImageViewWithByteArray(productImageIv, product.image);
+            }
+        } catch (Exception e) {
+            TextView multiplyTv = view.findViewById(R.id.multiply);
+            TextView equalsTv = view.findViewById(R.id.equals);
+
+            titleTv.setText("ПРОДУКТА БОЛЬШЕ НЕТ");
+            priceTv.setText("");
+            quantityTv.setText("");
+            priceSumTv.setText("");
+            multiplyTv.setText("");
+            equalsTv.setText("");
         }
-
 
         return view;
     }

@@ -144,17 +144,7 @@ public class BasketFragment extends Fragment {
         if (visible) {
             buyBtn = (MaterialButton) getLayoutInflater()
                     .inflate(R.layout.buy_button, topAppBar, false);
-            buyBtn.setOnClickListener(v -> {
-
-                dataViewModel.getPurseRepository().getById(Constants.PURSE_ID).observe(activity, purse -> {
-
-
-                });
-
-
-                transferItems();
-
-            });
+            buyBtn.setOnClickListener(v -> transferItems());
             topAppBar.addView(buyBtn);
 
             buyBtn.setEnabled(adapter.getCount() > 0);

@@ -2,8 +2,8 @@
     <string name="app_name">Thoughts</string>
     <string name="product_image">Product Image</string>
     <string name="title">Title</string>
-    <string name="price">PRICE</string>
-    <string name="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse, laudantium!</string>
+    <string name="price">Цена</string>
+    <string name="description">Описание</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
@@ -34,4 +34,8 @@
     <string name="res">RES</string>
     <string name="equals">=</string>
     <string name="answer">Ответить</string>
+    <string name="product_name">Название продукта</string>
+    <string name="update">Обновить</string>
+    <string name="send">Отправить</string>
+    <string name="cancel">Отмена</string>
 </resources>
