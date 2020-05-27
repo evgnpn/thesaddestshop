@@ -25,7 +25,7 @@ import by.step.thoughts.entity.relation.purchase.PurchaseWithItemsAndProduct;
 public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
-    private List<PurchaseWithItemsAndProduct> items;
+    private List<PurchaseWithItemsAndProduct> purchaseWithItemsAndProducts;
     private int groupLayoutResource, childLayoutResource;
     private OnChildClickListener onChildClickAction;
 
@@ -34,11 +34,20 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
             Context context,
             int groupLayoutResource,
             int childLayoutResource,
-            List<PurchaseWithItemsAndProduct> items) {
+            List<PurchaseWithItemsAndProduct> purchaseWithItemsAndProducts) {
         this.context = context;
-        this.items = items;
+        this.purchaseWithItemsAndProducts = purchaseWithItemsAndProducts;
         this.groupLayoutResource = groupLayoutResource;
         this.childLayoutResource = childLayoutResource;
+    }
+
+    public List<PurchaseWithItemsAndProduct> getPurchaseWithItemsAndProducts() {
+        return purchaseWithItemsAndProducts;
+    }
+
+    public void setPurchaseWithItemsAndProducts(
+            List<PurchaseWithItemsAndProduct> purchaseWithItemsAndProducts) {
+        this.purchaseWithItemsAndProducts = purchaseWithItemsAndProducts;
     }
 
     public void setOnChildClickAction(OnChildClickListener onChildClickAction) {
@@ -47,34 +56,36 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return items.size();
+        return purchaseWithItemsAndProducts.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return items.get(groupPosition).purchaseItemAndProducts.size();
+        return purchaseWithItemsAndProducts.get(groupPosition).purchaseItemAndProducts.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return items.get(groupPosition);
+        return purchaseWithItemsAndProducts.get(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return items.get(groupPosition).purchaseItemAndProducts.get(childPosition);
+        return purchaseWithItemsAndProducts.get(groupPosition)
+                .purchaseItemAndProducts.get(childPosition);
     }
 
     @Override
     public long getGroupId(int groupPosition) {
-        return items.get(groupPosition).purchase.id;
+        return purchaseWithItemsAndProducts.get(groupPosition).purchase.id;
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
 
         try {
-            return items.get(groupPosition).purchaseItemAndProducts.get(childPosition).product.id;
+            return purchaseWithItemsAndProducts.get(groupPosition)
+                    .purchaseItemAndProducts.get(childPosition).product.id;
         } catch (Exception ex) {
             return 0;
         }
@@ -126,11 +137,11 @@ public class PurchasesExpandableListAdapter extends BaseExpandableListAdapter {
             if (onChildClickAction != null) {
                 view.setOnClickListener(v ->
                         onChildClickAction.accept(
-                                items.get(groupPosition).purchase,
-                                items.get(groupPosition).purchaseItemAndProducts
-                                        .get(childPosition).purchaseItem,
-                                items.get(groupPosition).purchaseItemAndProducts
-                                        .get(childPosition).product));
+                                purchaseWithItemsAndProducts.get(groupPosition).purchase,
+                                purchaseWithItemsAndProducts.get(groupPosition)
+                                        .purchaseItemAndProducts.get(childPosition).purchaseItem,
+                                purchaseWithItemsAndProducts.get(groupPosition)
+                                        .purchaseItemAndProducts.get(childPosition).product));
             }
 
             if (purchaseItemAndProduct != null) {

@@ -101,7 +101,6 @@ public class ShopFragment extends Fragment {
             switch (item.getItemId()) {
                 case 0: // del category
                     Category category = bundle.getParcelable("CATEGORY");
-
                     if (category != null)
                         showCategoryProductDialog(category);
                     break;
@@ -136,7 +135,6 @@ public class ShopFragment extends Fragment {
 
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(context, resultCode + " result code", Toast.LENGTH_SHORT).show();
                 if (data != null) {
                     Bundle bundle = data.getExtras();
                     if (bundle != null) {
