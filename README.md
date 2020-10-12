@@ -1,2 +1,1 @@
 # thesaddestshop
-и так сойдет
